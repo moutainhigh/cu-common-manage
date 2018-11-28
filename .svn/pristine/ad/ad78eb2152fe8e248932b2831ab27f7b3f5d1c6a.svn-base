@@ -1,0 +1,8 @@
+# 数据库相关配置信息
+webservice.url=http://192.168.5.200:8088/passport/webservice/userservice
+isms.driverClassName=oracle.jdbc.driver.OracleDriver
+isms.url=jdbc:oracle:thin:@192.168.50.155:1521:bsmp
+isms.username=cu_v4
+isms.password=VePK9pAm
+isms.validationQuery=select sysdate from dual
+isms.clusterId=21

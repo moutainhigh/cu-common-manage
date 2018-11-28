@@ -1,0 +1,118 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+
+import com.aotain.cu.annotation.ExpSheet;
+import com.aotain.cu.annotation.Export;
+import com.aotain.cu.serviceapi.model.HouseInformation;
+
+@ExpSheet(name="机房主体信息")
+public class HouseInformationDTO extends HouseInformation implements Serializable {
+
+	private static final long serialVersionUID = 3533267188941121349L;
+	
+	@Export(title="经营者名称", id=1)
+	private String providerName; //经营者名称
+	
+	@Export(title="专线标识", id=4)
+	private String identifyStr; //专线标识（1-专线、2-非专线）
+	
+	@Export(title="机房性质", id=5)
+	private String houseTypeStr; //机房性质（1——租用、2——自建，999——其他）
+	
+	@Export(title="网络信息安全责任人证件类型", id=8)
+	private String houseOfficerIdTypeStr; //机房负责人-人员的证件类型(有效类型只有：2-身份证、7-护照、8-军官证，9-台胞证）
+
+	private String startDate;//查询开始时间
+
+	private String endDate;//查询结束时间
+
+	private String preHouseName;//变更之前机房名称
+
+	private String provinceName;//省级名称
+
+	private String cityName;//市级名称
+
+	private String countyName;//县级名称
+
+	public String getProvinceName() {
+		return provinceName;
+	}
+
+	public void setProvinceName(String provinceName) {
+		this.provinceName = provinceName;
+	}
+
+	public String getCityName() {
+		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
+
+	public String getCountyName() {
+		return countyName;
+	}
+
+	public void setCountyName(String countyName) {
+		this.countyName = countyName;
+	}
+
+	public String getPreHouseName() {
+		return preHouseName;
+	}
+
+	public void setPreHouseName(String preHouseName) {
+		this.preHouseName = preHouseName;
+	}
+
+	public String getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getProviderName() {
+		return providerName;
+	}
+
+	public String getIdentifyStr() {
+		return identifyStr;
+	}
+
+	public String getHouseTypeStr() {
+		return houseTypeStr;
+	}
+
+	public String getHouseOfficerIdTypeStr() {
+		return houseOfficerIdTypeStr;
+	}
+
+	public void setProviderName(String providerName) {
+		this.providerName = providerName;
+	}
+
+	public void setIdentifyStr(String identifyStr) {
+		this.identifyStr = identifyStr;
+	}
+
+	public void setHouseTypeStr(String houseTypeStr) {
+		this.houseTypeStr = houseTypeStr;
+	}
+
+	public void setHouseOfficerIdTypeStr(String houseOfficerIdTypeStr) {
+		this.houseOfficerIdTypeStr = houseOfficerIdTypeStr;
+	}
+	
+}

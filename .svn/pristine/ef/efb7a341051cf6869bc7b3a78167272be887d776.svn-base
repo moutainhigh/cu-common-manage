@@ -1,0 +1,51 @@
+package com.aotain.cu.utils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.aotain.cu.exception.NoAuthenticatedUserException;
+
+
+
+public class SecurityUtils {
+
+	private static Logger logger = LoggerFactory.getLogger(SecurityUtils.class);
+	
+	public static boolean isAuthenticated(){
+		try{
+			getAuthenticatedUser();
+			return true;
+		}catch (NoAuthenticatedUserException e){
+			return false;
+		}
+		
+	}
+	
+	public static ISMSUserDetails getAuthenticatedUser() throws NoAuthenticatedUserException {
+		Authentication authentication = null;
+		
+		Authentication authen = (Authentication) ThreadLocalUtil.get("houseExport"+Thread.currentThread().getId());
+		if(authen!=null){
+			authentication = authen;
+		}else{
+			authentication =  SecurityContextHolder.getContext().getAuthentication();
+		}
+		logger.debug("authentication: {}", authentication);
+		if (authentication != null && authentication.getPrincipal() != null) {
+			Object userDetails = authentication.getPrincipal();
+			if (userDetails != null && userDetails instanceof ISMSUserDetails)
+				return (ISMSUserDetails) userDetails;
+		}
+		throw new NoAuthenticatedUserException("No Authenticated User found.");
+	}
+	
+	public static String getUserID() {
+		if (SecurityUtils.getAuthenticatedUser() != null) {
+			return SecurityUtils.getAuthenticatedUser().getUserId();
+		} else {
+			return null;
+		}
+	}
+}

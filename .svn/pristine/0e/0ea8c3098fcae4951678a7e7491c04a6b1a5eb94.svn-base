@@ -1,0 +1,53 @@
+package com.aotain.cu.serviceapi.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class HouseDataInformation {
+	
+	List<HouseInformation> HouseInfos;
+	
+	List<HouseIPSegmentInformation> IpSegs;
+	
+	List<HouseFrameInformation> Frames;
+	
+	List<HouseGatewayInformation> GatewayInfos;
+
+	
+	public List<HouseInformation> getHouseInfos() {
+		if(HouseInfos == null)
+			HouseInfos = new ArrayList<HouseInformation>();
+		return HouseInfos;
+	}
+	public void setHouseInfos(List<HouseInformation> houseInfos) {
+		HouseInfos = houseInfos;
+	}
+	
+	public List<HouseIPSegmentInformation> getIpSegs() {
+		if(IpSegs == null)
+			IpSegs = new ArrayList<HouseIPSegmentInformation>();
+		return IpSegs;
+	}
+	public void setIpSegs(List<HouseIPSegmentInformation> iPSegs) {
+		IpSegs = iPSegs;
+	}
+	
+	public List<HouseFrameInformation> getFrames() {
+		if(Frames == null)
+			Frames = new ArrayList<HouseFrameInformation>();
+		return Frames;
+	}
+	public void setFrames(List<HouseFrameInformation> frames) {
+		Frames = frames;
+	}
+	
+	public List<HouseGatewayInformation> getGatewayInfos() {
+		if(GatewayInfos == null)
+			GatewayInfos = new ArrayList<HouseGatewayInformation>();
+		return GatewayInfos;
+	}
+	public void setGatewayInfos(List<HouseGatewayInformation> gatewayInfos) {
+		GatewayInfos = gatewayInfos;
+	}
+}

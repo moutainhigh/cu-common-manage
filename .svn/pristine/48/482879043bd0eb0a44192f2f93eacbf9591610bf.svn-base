@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aotain.common.policyapi.mapper.DPIFlowUploadMapper">
+
+    <sql id="baseColumn">
+        SEQ_ID AS seqId,
+        MESSAGE_NO AS messageNo,
+        PACKET_TYPE AS packetType,
+        PACKET_SUBTYPE AS packetSubType,
+        R_STARTTIME AS rStartTime,
+        R_ENDTIME AS rEndTime,
+        R_FREQ AS rFreqence,
+        R_DESTIP AS rDestIp,
+        R_DESTPORT AS  rDestPort,
+        R_METHOD AS rMethod,
+        R_SERVERNAME AS R_SERVERNAME,
+        R_SERVERPWD AS rServicePwd,
+        OPERATETYPE AS operationType,
+        MESSAGE_SEQUENCENO AS messageSequenceNo,
+        CREATE_TIME AS createTime,
+        STAT_TYPE AS statType
+    </sql>
+
+    <insert id="insertData" parameterType="com.aotain.common.policyapi.model.DPIFlowUpload" >
+        <selectKey resultType="long" order="BEFORE" keyProperty="seqId">
+            SELECT SEQ_DPI_V1_CFG_FLOWUPLOADID.Nextval as seqId from DUAL
+        </selectKey>
+        insert into DPI_V1_CFG_FLOWUPLOAD
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="seqId != null" >
+                SEQ_ID,
+            </if>
+            <if test="messageNo != null" >
+                MESSAGE_NO,
+            </if>
+            <if test="packetType != null" >
+                PACKET_TYPE,
+            </if>
+            <if test="packetSubType != null" >
+                PACKET_SUBTYPE,
+            </if>
+            <if test="rStartTime != null" >
+                R_STARTTIME,
+            </if>
+            <if test="rEndTime != null" >
+                R_ENDTIME,
+            </if>
+            <if test="rFreqence != null" >
+                R_FREQ,
+            </if>
+            <if test="rDestIp != null" >
+                R_DESTIP,
+            </if>
+            <if test="rDestPort != null" >
+                R_DESTPORT,
+            </if>
+            <if test="rMethod != null" >
+                R_METHOD,
+            </if>
+            <if test="rServiceName != null" >
+                R_SERVERNAME,
+            </if>
+            <if test="rServicePwd != null" >
+                R_SERVERPWD,
+            </if>
+            <if test="operationType != null" >
+                OPERATETYPE,
+            </if>
+            <if test="messageSequenceNo != null" >
+                MESSAGE_SEQUENCENO,
+            </if>
+            CREATE_TIME,
+            <if test="statType != null" >
+                STAT_TYPE,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="seqId != null" >
+                #{seqId,jdbcType=BIGINT},
+            </if>
+            <if test="messageNo != null" >
+                #{messageNo,jdbcType=BIGINT},
+            </if>
+            <if test="packetType != null" >
+                #{packetType,jdbcType=INTEGER},
+            </if>
+            <if test="packetSubType != null" >
+                #{packetSubType,jdbcType=INTEGER},
+            </if>
+            <if test="rStartTime != null" >
+                #{rStartTime,jdbcType=BIGINT},
+            </if>
+            <if test="rEndTime != null" >
+                #{rEndTime,jdbcType=BIGINT},
+            </if>
+            <if test="rFreqence != null" >
+                #{rFreqence,jdbcType=INTEGER},
+            </if>
+            <if test="rDestIp != null" >
+                #{rDestIp,jdbcType=VARCHAR},
+            </if>
+            <if test="rDestPort != null" >
+                #{rDestPort,jdbcType=INTEGER},
+            </if>
+            <if test="rMethod != null" >
+                #{rMethod,jdbcType=INTEGER},
+            </if>
+            <if test="rServiceName != null" >
+                #{rServiceName,jdbcType=VARCHAR},
+            </if>
+            <if test="rServicePwd != null" >
+                #{rServicePwd,jdbcType=VARCHAR},
+            </if>
+            <if test="operationType != null" >
+                #{operationType,jdbcType=INTEGER},
+            </if>
+            <if test="messageSequenceNo != null" >
+                #{messageSequenceNo,jdbcType=BIGINT},
+            </if>
+            SYSDATE,
+            <if test="statType != null" >
+                #{statType,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateData" parameterType="com.aotain.common.policyapi.model.DPIFlowUpload" >
+        update DPI_V1_CFG_FLOWUPLOAD
+        <set>
+            <if test="packetType != null" >
+                PACKET_TYPE = #{packetType,jdbcType=INTEGER},
+            </if>
+            <if test="packetSubType != null" >
+                PACKET_SUBTYPE = #{packetSubType,jdbcType=INTEGER},
+            </if>
+            <if test="rStartTime != null" >
+                R_STARTTIME = #{rStartTime,jdbcType=BIGINT},
+            </if>
+            <if test="rEndTime != null" >
+                R_ENDTIME = #{rEndTime,jdbcType=BIGINT},
+            </if>
+            <if test="rFreqence != null" >
+                R_FREQ = #{rFreqence,jdbcType=INTEGER},
+            </if>
+            <if test="rDestIp != null" >
+                R_DESTIP = #{rDestIp,jdbcType=VARCHAR},
+            </if>
+            <if test="rDestPort != null" >
+                R_DESTPORT = #{rDestPort,jdbcType=INTEGER},
+            </if>
+            <if test="rMethod != null" >
+                R_METHOD = #{rMethod,jdbcType=INTEGER},
+            </if>
+            <if test="rServiceName != null" >
+                R_SERVERNAME = #{rServiceName,jdbcType=VARCHAR},
+            </if>
+            <if test="rServicePwd != null" >
+                R_SERVERPWD = #{rServicePwd,jdbcType=VARCHAR},
+            </if>
+            <if test="operationType != null" >
+                OPERATETYPE =  #{operationType,jdbcType=INTEGER},
+            </if>
+            <if test="createTime !=null" >
+                create_time = sysdate,
+            </if>
+            <if test="messageSequenceNo != null" >
+                MESSAGE_SEQUENCENO = #{messageSequenceNo,jdbcType=BIGINT},
+            </if>
+        </set>
+        where seq_id = #{seqId}
+    </update>
+
+    <update id="deleteData" parameterType="com.aotain.common.policyapi.model.DPIFlowUpload" >
+        update DPI_V1_CFG_FLOWUPLOAD
+        <set>
+            <if test="operationType != null" >
+                OPERATETYPE =  #{operationType,jdbcType=INTEGER},
+            </if>
+            <if test="createTime !=null" >
+                create_time = sysdate,
+            </if>
+        </set>
+        where seq_id = #{seqId}
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="long" resultType="com.aotain.common.policyapi.model.DPIFlowUpload">
+        select
+          <include refid="baseColumn"/>
+        FROM
+          DPI_V1_CFG_FLOWUPLOAD
+        where SEQ_ID = #{seqId} and OPERATETYPE in (1,2)
+
+    </select>
+
+</mapper>

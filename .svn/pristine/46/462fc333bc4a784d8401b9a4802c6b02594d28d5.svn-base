@@ -1,0 +1,261 @@
+package com.aotain.cu.serviceapi.model;
+
+import com.aotain.cu.annotation.Export;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiParam;
+
+import java.io.Serializable;
+import java.util.List;
+
+@ApiModel("IdcInformation")
+public class IdcInformation extends BaseModel implements Serializable {
+
+	private static final long serialVersionUID = -9144893083132524626L;
+
+	// 经营者ID
+	private Long jyzId; 
+
+	// 电信管理部门颁发的IDC/ISP许可证号
+	@Export(title = "*许可证号", id = 2)
+	private String idcId; 
+
+	// 经营者名称，与许可证上名称一致
+	@Export(title = "*经营者名称", id = 3)
+	private String idcName; 
+
+	// 通信地址
+	@Export(title = "*经营者通信地址", id = 6)
+	private String idcAddress; 
+
+	// 通信地址邮编
+	@Export(title = "*通信地址邮编", id = 5)
+	private String idcZipCode; 
+
+	// 企业法人
+	@Export(title = "*企业法人", id = 4)
+	private String corporater; 
+
+	// 网络信息安全责任人-姓名
+	@Export(title = "*网络信息安全责任人姓名", id = 7)
+	private String officerName; 
+
+	// 网络信息安全责任人-证件类型(2-身份证、7-护照、8-军官证，9-台胞证)
+	private Integer officerIdType; 
+
+	// 网络信息安全责任人-证件号码
+	@Export(title = "*网络信息安全责任人证件号码", id = 9)
+	private String officerId; 
+
+	// 网络信息安全责任人-固定电话
+	@Export(title = "*网络信息安全责任人固定电话", id = 10)
+	private String officerTelephone; 
+
+	// 网络信息安全责任人-移动电话
+	@Export(title = "*网络信息安全责任人移动电话", id = 11)
+	private String officerMobile; 
+
+	// 网络信息安全责任人-email地址
+	@Export(title = "*网络信息安全责任人Email", id = 12)
+	private String officerEmail; 
+
+	// 应急联系人-姓名
+	@Export(title = "*应急联系人姓名", id = 13)
+	private String ecName; 
+
+	// 应急联系人-证件类型(2-身份证、7-护照、8-军官证，9-台胞证)
+	private Integer ecIdType; 
+
+	// 应急联系人-证件号码
+	@Export(title = "*应急联系人证件号码", id = 15)
+	private String ecId; 
+
+	// 应急联系人-固定电话
+	@Export(title = "*应急联系人固定电话", id = 16)
+	private String ecTelephone; 
+
+	// 应急联系人-移动电话
+	@Export(title = "*应急联系人移动电话", id = 17)
+	private String ecMobile; 
+
+	// 应急联系人-email地址
+	@Export(title = "*应急联系人Email", id = 18)
+	private String ecEmail; 
+
+	// IDC机房数量
+	private Integer houseNum;
+
+	//机房
+	private List<HouseInformation> houseList;
+
+	//用户
+	private List<UserInformation> userList;
+
+
+	public Long getJyzId() {
+		return jyzId;
+	}
+
+	public String getIdcId() {
+		return idcId;
+	}
+
+	public String getIdcName() {
+		return idcName;
+	}
+
+	public String getIdcAddress() {
+		return idcAddress;
+	}
+
+	public String getIdcZipCode() {
+		return idcZipCode;
+	}
+
+	public String getCorporater() {
+		return corporater;
+	}
+
+	public String getOfficerName() {
+		return officerName;
+	}
+
+	public Integer getOfficerIdType() {
+		return officerIdType;
+	}
+
+	public String getOfficerId() {
+		return officerId;
+	}
+
+	public String getOfficerTelephone() {
+		return officerTelephone;
+	}
+
+	public String getOfficerMobile() {
+		return officerMobile;
+	}
+
+	public String getOfficerEmail() {
+		return officerEmail;
+	}
+
+	public String getEcName() {
+		return ecName;
+	}
+
+	public Integer getEcIdType() {
+		return ecIdType;
+	}
+
+	public String getEcId() {
+		return ecId;
+	}
+
+	public String getEcTelephone() {
+		return ecTelephone;
+	}
+
+	public String getEcMobile() {
+		return ecMobile;
+	}
+
+	public String getEcEmail() {
+		return ecEmail;
+	}
+
+	public Integer getHouseNum() {
+		return houseNum;
+	}
+
+	public void setJyzId(Long jyzId) {
+		this.jyzId = jyzId;
+	}
+
+	public void setIdcId(String idcId) {
+		this.idcId = idcId;
+	}
+
+	public void setIdcName(String idcName) {
+		this.idcName = idcName;
+	}
+
+	public void setIdcAddress(String idcAddress) {
+		this.idcAddress = idcAddress;
+	}
+
+	public void setIdcZipCode(String idcZipCode) {
+		this.idcZipCode = idcZipCode;
+	}
+
+	public void setCorporater(String corporater) {
+		this.corporater = corporater;
+	}
+
+	public void setOfficerName(String officerName) {
+		this.officerName = officerName;
+	}
+
+	public void setOfficerIdType(Integer officerIdType) {
+		this.officerIdType = officerIdType;
+	}
+
+	public void setOfficerId(String officerId) {
+		this.officerId = officerId;
+	}
+
+	public void setOfficerTelephone(String officerTelephone) {
+		this.officerTelephone = officerTelephone;
+	}
+
+	public void setOfficerMobile(String officerMobile) {
+		this.officerMobile = officerMobile;
+	}
+
+	public void setOfficerEmail(String officerEmail) {
+		this.officerEmail = officerEmail;
+	}
+
+	public void setEcName(String ecName) {
+		this.ecName = ecName;
+	}
+
+	public void setEcIdType(Integer ecIdType) {
+		this.ecIdType = ecIdType;
+	}
+
+	public void setEcId(String ecId) {
+		this.ecId = ecId;
+	}
+
+	public void setEcTelephone(String ecTelephone) {
+		this.ecTelephone = ecTelephone;
+	}
+
+	public void setEcMobile(String ecMobile) {
+		this.ecMobile = ecMobile;
+	}
+
+	public void setEcEmail(String ecEmail) {
+		this.ecEmail = ecEmail;
+	}
+
+	public void setHouseNum(Integer houseNum) {
+		this.houseNum = houseNum;
+	}
+
+	public List<HouseInformation> getHouseList() {
+		return houseList;
+	}
+
+	public void setHouseList( List<HouseInformation> houseList ) {
+		this.houseList = houseList;
+	}
+
+	public List<UserInformation> getUserList() {
+		return userList;
+	}
+
+	public void setUserList( List<UserInformation> userList ) {
+		this.userList = userList;
+	}
+}

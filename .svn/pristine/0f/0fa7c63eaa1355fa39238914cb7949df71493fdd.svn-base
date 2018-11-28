@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aotain.common.config.dao.CmdInfoManageMapper">
+
+
+  <insert id="InsertCmdAckInfo" parameterType="com.aotain.common.config.model.CmdAck">
+    <selectKey keyProperty="ackId" resultType="java.lang.Long" order="BEFORE">
+			SELECT seq_idc_isms_cmd_ack.NEXTVAL as ackId FROM dual
+	</selectKey>
+    insert into IDC_ISMS_REPLY_CMD_ACK
+    	(ACKID,COMMANDID,HOUSEID,CMD_TYPE,RESULT_CODE,MSGINFO,IDCID,
+   		 COMMANDFILEID,TIMESTAMP,CREATE_TIME,DEAL_FLAG,VIEWCOUNT,MONITORCOUNT,FILTERCOUNT)
+       values
+        (#{ackId},
+        #{commandId,jdbcType=NUMERIC},
+        #{houseId,jdbcType=NUMERIC},
+        #{type,jdbcType=VARCHAR},
+        #{resultCode,jdbcType=NUMERIC},
+        #{msgInfo,jdbcType=VARCHAR},
+        #{idcId,jdbcType=VARCHAR},
+        #{commandFileid,jdbcType=NUMERIC},
+        #{createTime,jdbcType=TIMESTAMP},
+        #{createTime,jdbcType=TIMESTAMP},
+        #{dealFlag,jdbcType=NUMERIC},
+        #{view,jdbcType=NUMERIC},
+        #{monitorCount,jdbcType=NUMERIC},
+        #{filterCount,jdbcType=NUMERIC})
+  </insert>
+</mapper>

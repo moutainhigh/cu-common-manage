@@ -1,0 +1,382 @@
+package com.aotain.common.policyapi.service;
+
+import com.alibaba.fastjson.JSON;
+import com.aotain.common.config.LocalConfig;
+import com.aotain.common.config.redis.BaseRedisService;
+import com.aotain.common.policyapi.model.HousePolicyBind;
+import com.aotain.common.policyapi.model.ISPMessagePolicyRule;
+import com.aotain.common.utils.model.msg.RedisTaskStatus;
+import com.aotain.common.utils.monitorstatistics.ExceptionCollector;
+import com.aotain.common.utils.monitorstatistics.ModuleConstant;
+import com.aotain.common.utils.redis.TaskIdUtil;
+import com.aotain.common.utils.redis.TaskMessageUtil;
+import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.aotain.common.policyapi.base.BaseService;
+import com.aotain.common.policyapi.base.BaseVo;
+import com.aotain.common.policyapi.mapper.ISPMessagePolicyMapper;
+import com.aotain.common.policyapi.model.ISPMessagePolicy;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class ISPMessagePolicyService extends BaseService{
+
+	private static Logger logger = LoggerFactory.getLogger(AccessLogPolicyService.class);
+	@Autowired
+	private ISPMessagePolicyMapper mapper;
+
+	@Override
+	public ISPMessagePolicyMapper getMapper() {
+		return mapper;
+	}
+
+	@Autowired
+	private MessageNameService messageNameService;
+
+	@Autowired
+	private HousePolicyBindService housePolicyBindService;
+
+	@Autowired
+	private BaseRedisService<String, String, String> baseRedisService;
+
+	@Autowired
+	private ExceptionCollector exceptionCollector;
+	
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public boolean addDb(BaseVo policy) {
+		setPropertiesBeforeSaveOrUpdate(policy);
+
+		try {
+			ISPMessagePolicy domain=(ISPMessagePolicy) policy;
+			int i=mapper.insertData(domain);
+			if(i>0){
+				if(domain.getRules()!=null && domain.getRules().size()>0){
+					Long commandId = domain.getCommandId();
+					for (int j = 0; j < domain.getRules().size(); j++) {
+						// 插入之前先给commandId赋值
+						ISPMessagePolicyRule ispMessagePolicyRule = domain.getRules().get(j);
+						ispMessagePolicyRule.setCommandId(commandId);
+						mapper.insertPolicyRule(ispMessagePolicyRule);
+					}
+				}else{
+		            logger.error(this.getClass().getName()+" addDb getRules is null!");
+		            return false;
+				}
+				//添加数据到messageNo表
+				messageNameService.addMessageName(domain);
+			}else{
+				logger.error(this.getClass().getName()+" add error! msg=" + policy.objectToJson());
+				return false;
+			}
+			return true;
+		} catch (Exception e) {
+			logger.error(this.getClass().getName()+" addDb error,Param="+policy.objectToJson(),e);
+			exceptionCollector.addEvent(e);
+            return false;
+		}
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public boolean modifyDb(BaseVo policy) {
+		setPropertiesBeforeSaveOrUpdate(policy);
+
+		try {
+			ISPMessagePolicy domain=(ISPMessagePolicy) policy;
+			int i=mapper.updateData(domain);
+
+			if(i>0){
+				mapper.deletePolicyRule(domain);
+				if(domain.getRules()!=null && domain.getRules().size()>0){
+					for (int j = 0; j < domain.getRules().size(); j++) {
+						ISPMessagePolicyRule ispMessagePolicyRule = domain.getRules().get(j);
+						ispMessagePolicyRule.setCommandId(domain.getCommandId());
+						mapper.insertPolicyRule(ispMessagePolicyRule);
+					}
+				}else{
+		            logger.error(this.getClass().getName()+" modifyDb getRules is null!");
+		            return false;
+				}
+				//TODO messageNo获取
+				//修改数据到messageNo表
+				messageNameService.modifyMessageName(domain);
+			}else{
+				logger.error(this.getClass().getName()+" modifyDb error! msg=" + policy.objectToJson());
+				return false;
+			}
+			return true;
+		} catch (Exception e) {
+			logger.error(this.getClass().getName()+" modifyDb error,Param="+policy.objectToJson(),e);
+			exceptionCollector.addEvent(e);
+            return false;
+		}
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public boolean deleteDb(BaseVo policy) {
+		setPropertiesBeforeSaveOrUpdate(policy);
+		try {
+			ISPMessagePolicy domain=(ISPMessagePolicy) policy;
+
+			setUnSetPropertiesForChannel(domain);
+
+//			mapper.deletePolicyRule(domain);
+			mapper.deletePolicy(domain);
+			//TODO messageNo获取
+			//修改数据到messageNo表
+			messageNameService.deleteMessageName(domain);
+			return true;
+		} catch (Exception e) {
+			logger.error(this.getClass().getName()+" deleteDb error,Param="+policy.objectToJson(),e);
+			exceptionCollector.addEvent(e);
+            return false;
+		}
+	}
+
+	/**
+	 * 删除时给一些通道需要的参数赋值
+	 * @param ispMessagePolicload
+	 * @return
+	 */
+	private void setUnSetPropertiesForChannel(ISPMessagePolicy ispMessagePolicload){
+
+		try{
+			ISPMessagePolicy result = mapper.selectByPrimaryKey(ispMessagePolicload.getCommandId());
+			if (ispMessagePolicload.getMessageNo()==null||ispMessagePolicload.getMessageNo()==0){
+				ispMessagePolicload.setMessageNo(result.getMessageNo());
+			}
+			ispMessagePolicload.setSmmsCommandId(result.getSmmsCommandId());
+			ispMessagePolicload.setType(result.getType());
+			ispMessagePolicload.setBlockFlag(result.getBlockFlag());
+			ispMessagePolicload.setLogFlag(result.getLogFlag());
+			ispMessagePolicload.setLevel(result.getLevel());
+			ispMessagePolicload.setEffectTime(result.getEffectTime());
+			ispMessagePolicload.setExpiredTime(result.getExpiredTime());
+			ispMessagePolicload.setOwner(result.getOwner());
+
+			List<ISPMessagePolicyRule> ispMessagePolicyRules = mapper.selectPolicyRuleListByCommandId(ispMessagePolicload.getCommandId());
+			ispMessagePolicload.setRules(ispMessagePolicyRules);
+		} catch (Exception e) {
+			logger.error(this.getClass().getName()+" setUnSetPropertiesForChannel error! msg=" + e.getMessage());
+			exceptionCollector.addEvent(e);
+		}
+
+	}
+
+	@Override
+	public boolean addCustomLogic(BaseVo policy) {
+		long taskId = TaskIdUtil.getInstance().getTaskId();
+		// 是否成功标志
+		boolean success = setPolicyOperateSequenceToRedis(policy);
+		if (!success) {
+			logger.error("setPolicyOperateSequenceToRedis failed...");
+			return false;
+		}
+
+		if (policy.getTopTaskId()==null) {
+			policy.setTopTaskId(0);
+		}
+		success = setPolicyToRedisTask(taskId, policy.getTopTaskId(),policy.objectToJson());
+
+		if (!success) {
+			logger.error("setPolicyToRedisTask failed...");
+			return false;
+		}
+
+		success = setCommandSmmsToRedis(policy,taskId);
+		if (!success) {
+			logger.error("setCommandSmmsToRedis failed...");
+			return false;
+		}
+
+		success = publishRedisChannel(policy);
+		if (!success) {
+			logger.error("publishRedisChannel failed...");
+			return false;
+		}
+
+		long toptaskid = policy.getTopTaskId() == 0 ? taskId : policy.getTopTaskId();
+
+
+		if ( policy instanceof ISPMessagePolicy) {
+			ISPMessagePolicy ispMessagePolicy = (ISPMessagePolicy)policy;
+			// 只有违法信息且需要记录日志的需要发送系统任务
+			if (ispMessagePolicy.getLogFlag()==1){
+				if (ispMessagePolicy.getType()==1||ispMessagePolicy.getType()==2){
+					success = addMessageRedisTask(TaskIdUtil.getInstance().getTaskId(), toptaskid);
+				}
+			}
+
+		}
+
+		if (!success){
+			logger.error("add message task to redis failed...");
+			return false;
+		}
+
+		return success;
+	}
+
+	@Override
+	protected boolean modifyCustomLogic(BaseVo policy) {
+		return setStrategyAndSmmsCommandToRedis(policy);
+	}
+
+	@Override
+	protected boolean deleteCustomLogic(BaseVo policy) {
+
+		boolean success = deleteAccessLogBindPolicy(policy);
+		if( !success ) {
+			logger.error("deleteAccessLogBindPolicy failed...");
+			return false;
+		}
+
+		success = setPolicyOperateSequenceToRedis(policy);
+		if (!success) {
+			logger.error("setPolicyOperateSequenceToRedis failed...");
+			return false;
+		}
+
+		success = deleteCommandSmmsFromRedis(policy);
+		if (!success) {
+			logger.error("deleteCommandSmmsFromRedis failed...");
+			return false;
+		}
+		return success;
+	}
+
+	private boolean setCommandSmmsToRedis(BaseVo policy,long taskId){
+		try{
+			ISPMessagePolicy ispMessagePolicy = (ISPMessagePolicy)policy;
+			Map<String,Object> info = Maps.newHashMap();
+			info.put("type",(long)ispMessagePolicy.getType());
+			info.put("smmsCommandId",ispMessagePolicy.getSmmsCommandId()==null?"":ispMessagePolicy.getSmmsCommandId().toString());
+			if (ispMessagePolicy.getTopTaskId()==null||ispMessagePolicy.getTopTaskId()==0){
+				info.put("toptaskid",taskId);
+			} else {
+				info.put("toptaskid",ispMessagePolicy.getTopTaskId());
+			}
+
+			baseRedisService.putHash("CommandSmms",ispMessagePolicy.getCommandId().toString(), JSON.toJSONString(info));
+		} catch (Exception e) {
+			logger.error(this.getClass().getName()+" setCommandSmmsToRedis error,Param="+policy.objectToJson(),e);
+			exceptionCollector.addEvent(e);
+		}
+
+		return true;
+	}
+
+	private boolean deleteCommandSmmsFromRedis(BaseVo policy) {
+		try{
+			ISPMessagePolicy ispMessagePolicy = (ISPMessagePolicy)policy;
+			baseRedisService.removeHash("CommandSmms",ispMessagePolicy.getCommandId().toString());
+		} catch (Exception e) {
+			logger.error(this.getClass().getName()+" deleteCommandSmmsFromRedis error,Param="+policy.objectToJson(),e);
+			exceptionCollector.addEvent(e);
+		}
+
+		return true;
+	}
+
+	private boolean setStrategyAndSmmsCommandToRedis(BaseVo policy) {
+		long taskId = TaskIdUtil.getInstance().getTaskId();
+
+		boolean success = setPolicyOperateSequenceToRedis(policy);
+		if (!success) {
+			logger.error("setPolicyOperateSequenceToRedis failed...");
+			return false;
+		}
+
+		success = setCommandSmmsToRedis(policy,taskId);
+		if (!success) {
+			logger.error("setCommandSmmsToRedis failed...");
+			return false;
+		}
+		return success;
+	}
+
+	/**
+	 * 删除策略对应的绑定策略
+	 * @param policy
+	 * @return
+	 */
+	private boolean deleteAccessLogBindPolicy(BaseVo policy){
+		try{
+			//获得已经绑定机房策略
+			List<HousePolicyBind> bindList = getBindPolicy(policy);
+			boolean result =  housePolicyBindService.deletePolicy(bindList);
+			if(!result){
+				logger.error("delete policy bind list error! msg=" + policy.objectToJson());
+				return false;
+			}
+		} catch (Exception e) {
+			logger.error(this.getClass().getName()+" deleteAccessLogBindPolicy error,Param="+policy.objectToJson(),e);
+			exceptionCollector.addEvent(e);
+		}
+
+		return true;
+	}
+
+	/**
+	 * 添加消息任务hash中
+	 * @param taskId
+	 * @return
+	 */
+	protected boolean addMessageRedisTask(long taskId,long topTaskId){
+		try{
+			RedisTaskStatus taskStatus = new RedisTaskStatus();
+
+			//获得重试参数   最大处理次数,过期时间,处理间隔
+			String commandStrs = LocalConfig.getInstance().getHashValueByHashKey("check_monitorlog");
+			String[] params = commandStrs.split(",");
+			int maxTimes = Integer.parseInt(params[0]);
+			long expireTime = Long.parseLong(params[1]);
+			int interval = Integer.parseInt(params[2]);
+
+			taskStatus.setTasktype(6);
+			Map<String,String> maps = Maps.newHashMap();
+			maps.put("msg","MESSAGE_MONITORLOG");
+			taskStatus.setContent(JSON.toJSONString(maps));
+			taskStatus.setStatus(1);
+			taskStatus.setMaxtimes(maxTimes);
+			taskStatus.setTimes(1);
+			taskStatus.setExpiretime(expireTime);
+			taskStatus.setInterval(interval);
+			taskStatus.setNexttime(System.currentTimeMillis()/1000 + interval);
+			taskStatus.setTaskid(taskId);
+			taskStatus.setCreatetime(System.currentTimeMillis()/1000);
+
+			taskStatus.setToptaskid(topTaskId);
+
+			TaskMessageUtil.getInstance().setTask(taskStatus.getTaskid(), taskStatus);
+			logger.info("===========taskId========"+taskStatus.getTaskid());
+
+			return true;
+		}catch(Exception e){
+			logger.error(this.getClass().getName()+" addMessageRedisTask error,Param=[taskId=]"+taskId+"[,topTaskId=]"+topTaskId,e);
+			exceptionCollector.addEvent(e);
+			return false;
+		}
+	}
+
+	public static void main(String[] args) {
+		RedisTaskStatus taskStatus = new RedisTaskStatus();
+		taskStatus.setTasktype(6);
+		Map<String,String> maps = Maps.newHashMap();
+		maps.put("MESSAGE_MONITORLOG","MESSAGE_MONITORLOG");
+		taskStatus.setContent(JSON.toJSONString(maps));
+		taskStatus.setStatus(1);
+		taskStatus.setTimes(1);
+		taskStatus.setCreatetime(System.currentTimeMillis()/1000);
+		System.out.println(JSON.toJSONString(taskStatus));
+	}
+}

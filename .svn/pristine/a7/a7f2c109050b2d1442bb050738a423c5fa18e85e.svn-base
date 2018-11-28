@@ -1,0 +1,344 @@
+package com.aotain.cu.serviceapi.model;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
+
+import com.aotain.cu.annotation.Export;
+import io.swagger.annotations.ApiModel;
+
+@ApiModel("UserInformation")
+public class UserInformation extends BaseModel implements Serializable {
+
+	private static final long serialVersionUID = 129343375727638873L;
+
+	private Long userSeqId;
+	private Long submitId;
+
+	private Long userId;
+
+    private String userCode; // 客户编号
+
+    private Integer jyzId; // 经营者信息ID
+
+    @Export(title="用户属性", id=4)
+    private Integer nature; // 客户属性（1-提供互联网应用服务的用户、2-其他用户）
+
+    @Export(title="单位名称", id=5)
+    private String unitName; // 单位名称
+
+    @Export(title="单位属性", id=7)
+    private Integer unitNature; // 单位属性
+
+    @Export(title="单位的证件类型", id=8)
+    private Integer idType; // 证件类型
+
+    @Export(title="证件号码", id=9)
+    private String idNumber; // 证件号码
+
+    @Export(title="网络信息安全责任人姓名", id=14)
+	private String officerName; //网络信息安全责任人-人员姓名
+	
+	@Export(title="网络信息安全责任人证件类型", id=15)
+	private Integer officerIdType; //网络信息安全责任人-人员的证件类型
+	
+	@Export(title="网络信息安全责任人证件号码", id=16)
+	private String officerId; //网络信息安全责任人-对应的证件号码
+	
+	@Export(title="网络信息安全责任人固定电话", id=17)
+	private String officerTelphone; //网络信息安全责任人-固定电话
+	
+	@Export(title="网络信息安全责任人移动电话", id=18)
+	private String officerMobile; //网络信息安全责任人-移动电话
+	
+	@Export(title="网络信息安全责任人Email", id=19)
+	private String officerEmail; //网络信息安全责任人-email地址
+
+	private String clientId;
+
+    private String unitAddressProvinceCode; // 单位地址-省份下拉框
+
+    private String unitAddressProvinceName; // 单位地址-省份名称
+
+    private String unitAddressCityCode; // 单位地址-市级下拉框
+
+    private String unitAddressCityName; // 单位地址-市级名称
+
+    private String unitAddressAreaCode; // 单位地址-县级下拉框
+
+    private String unitAddressAreaName; // 单位地址-县级名称
+
+    @Export(title="单位地址", id=11)
+	private String unitAddress; //单位地址
+
+    @Export(title="邮政编码", id=10)
+	private String unitZipCode; //邮政编码
+	
+	@Export(title="注册日期", id=12)
+	private String registeTime; //注册时间
+	
+	@Export(title="服务开通日期", id=13)
+	private String serviceRegTime; //服务开通时间(其他用户)
+
+    private List<UserServiceInformation> serviceList;
+
+    private List<UserBandwidthInformation> bandwidthList;
+
+    private List<UserVirtualInformation> virtualList;
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public String getUserCode() {
+		return userCode;
+	}
+
+	public Integer getJyzId() {
+		return jyzId;
+	}
+
+	public Integer getNature() {
+		return nature;
+	}
+
+	public String getUnitName() {
+		return unitName;
+	}
+
+	public Integer getUnitNature() {
+		return unitNature;
+	}
+
+	public Integer getIdType() {
+		return idType;
+	}
+
+	public String getIdNumber() {
+		return idNumber;
+	}
+
+	public String getOfficerName() {
+		return officerName;
+	}
+
+	public Integer getOfficerIdType() {
+		return officerIdType;
+	}
+
+	public String getOfficerId() {
+		return officerId;
+	}
+
+	public String getOfficerTelphone() {
+		return officerTelphone;
+	}
+
+	public String getOfficerMobile() {
+		return officerMobile;
+	}
+
+	public String getOfficerEmail() {
+		return officerEmail;
+	}
+
+	public String getUnitAddressProvinceCode() {
+		return unitAddressProvinceCode;
+	}
+
+	public String getUnitAddressProvinceName() {
+		return unitAddressProvinceName;
+	}
+
+	public String getUnitAddressCityCode() {
+		return unitAddressCityCode;
+	}
+
+	public String getUnitAddressCityName() {
+		return unitAddressCityName;
+	}
+
+	public String getUnitAddressAreaCode() {
+		return unitAddressAreaCode;
+	}
+
+	public String getUnitAddressAreaName() {
+		return unitAddressAreaName;
+	}
+
+	public String getUnitAddress() {
+		return unitAddress;
+	}
+
+	public String getUnitZipCode() {
+		return unitZipCode;
+	}
+
+	public String getRegisteTime() {
+		return registeTime;
+	}
+
+	public String getServiceRegTime() {
+		return serviceRegTime;
+	}
+
+	public List<UserServiceInformation> getServiceList() {
+		return serviceList;
+	}
+
+	public List<UserBandwidthInformation> getBandwidthList() {
+		return bandwidthList;
+	}
+
+	public List<UserVirtualInformation> getVirtualList() {
+		return virtualList;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
+
+	public void setJyzId(Integer jyzId) {
+		this.jyzId = jyzId;
+	}
+
+	public void setNature(Integer nature) {
+		this.nature = nature;
+	}
+
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
+
+	public void setUnitNature(Integer unitNature) {
+		this.unitNature = unitNature;
+	}
+
+	public void setIdType(Integer idType) {
+		this.idType = idType;
+	}
+
+	public void setIdNumber(String idNumber) {
+		this.idNumber = idNumber;
+	}
+
+	public void setOfficerName(String officerName) {
+		this.officerName = officerName;
+	}
+
+	public void setOfficerIdType(Integer officerIdType) {
+		this.officerIdType = officerIdType;
+	}
+
+	public void setOfficerId(String officerId) {
+		this.officerId = officerId;
+	}
+
+	public void setOfficerTelphone(String officerTelphone) {
+		this.officerTelphone = officerTelphone;
+	}
+
+	public void setOfficerMobile(String officerMobile) {
+		this.officerMobile = officerMobile;
+	}
+
+	public void setOfficerEmail(String officerEmail) {
+		this.officerEmail = officerEmail;
+	}
+
+	public void setUnitAddressProvinceCode(String unitAddressProvinceCode) {
+		this.unitAddressProvinceCode = unitAddressProvinceCode;
+	}
+
+	public void setUnitAddressProvinceName(String unitAddressProvinceName) {
+		this.unitAddressProvinceName = unitAddressProvinceName;
+	}
+
+	public void setUnitAddressCityCode(String unitAddressCityCode) {
+		this.unitAddressCityCode = unitAddressCityCode;
+	}
+
+	public void setUnitAddressCityName(String unitAddressCityName) {
+		this.unitAddressCityName = unitAddressCityName;
+	}
+
+	public void setUnitAddressAreaCode(String unitAddressAreaCode) {
+		this.unitAddressAreaCode = unitAddressAreaCode;
+	}
+
+	public void setUnitAddressAreaName(String unitAddressAreaName) {
+		this.unitAddressAreaName = unitAddressAreaName;
+	}
+
+	public void setUnitAddress(String unitAddress) {
+		this.unitAddress = unitAddress;
+	}
+
+	public void setUnitZipCode(String unitZipCode) {
+		this.unitZipCode = unitZipCode;
+	}
+
+	public void setRegisteTime(String registeTime) {
+		this.registeTime = registeTime;
+	}
+
+	public void setServiceRegTime(String serviceRegTime) {
+		this.serviceRegTime = serviceRegTime;
+	}
+
+	public void setServiceList(List<UserServiceInformation> serviceList) {
+		this.serviceList = serviceList;
+	}
+
+	public void setBandwidthList(List<UserBandwidthInformation> bandwidthList) {
+		this.bandwidthList = bandwidthList;
+	}
+
+	public void setVirtualList(List<UserVirtualInformation> virtualList) {
+		this.virtualList = virtualList;
+	}
+
+	public Long getSubmitId() {
+		return submitId;
+	}
+
+	public void setSubmitId(Long submitId) {
+		this.submitId = submitId;
+	}
+
+	public Long getUserSeqId() {
+		return userSeqId;
+	}
+
+	public void setUserSeqId(Long userSeqId) {
+		this.userSeqId = userSeqId;
+	}
+
+	public String getClientId() {
+		return clientId;
+	}
+
+	public void setClientId( String clientId ) {
+		this.clientId = clientId;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		UserInformation that = (UserInformation) o;
+		return Objects.equals(unitName, that.unitName) &&
+				Objects.equals(idType, that.idType) &&
+				Objects.equals(idNumber, that.idNumber);
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hash(unitName, idType, idNumber);
+	}
+}

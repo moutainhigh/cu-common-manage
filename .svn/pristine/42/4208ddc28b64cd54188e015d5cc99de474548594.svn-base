@@ -1,0 +1,53 @@
+package com.aotain.cu.utils;
+
+import java.io.Serializable;
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+
+import com.aotain.cu.serviceapi.model.SystemOperator;
+
+
+
+public class ISMSUserDetails extends User implements Serializable {
+
+	private static final long serialVersionUID = -2139433279922902369L;
+	
+	private String userId;
+	
+	private SystemOperator account;
+	
+	public ISMSUserDetails(String username, String password, boolean enabled,
+			boolean accountNonExpired, boolean credentialsNonExpired,
+			boolean accountNonLocked,
+			Collection<? extends GrantedAuthority> authorities) {
+		super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+	}
+	
+	public ISMSUserDetails(SystemOperator account, String userId, String username, String password, boolean enabled,
+			boolean accountNonExpired, boolean credentialsNonExpired,
+			boolean accountNonLocked,
+			Collection<? extends GrantedAuthority> authorities) {
+		this(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+		this.account = account;
+		this.userId = userId;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	
+	public SystemOperator getAccount() {
+		return account;
+	}
+
+	public void setAccount(SystemOperator account) {
+		this.account = account;
+	}
+	
+}

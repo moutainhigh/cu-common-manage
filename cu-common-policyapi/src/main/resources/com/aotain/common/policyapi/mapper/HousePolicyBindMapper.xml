@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aotain.common.policyapi.mapper.HousePolicyBindMapper">
+
+	<insert id="insertData" parameterType="com.aotain.common.policyapi.model.HousePolicyBind">
+		<selectKey keyProperty="bindId" resultType="java.lang.Long" order="BEFORE">
+			select seq_dpi_v1_cfg_bindid.nextval from dual 
+		</selectKey>
+		 insert into IDC_ISMS_CFG_HOUSEPOLICYBIND
+	        (BIND_ID,
+	         HOUSE_TYPE,
+	         HOUSE_ID,
+	         MESSAGE_TYPE,
+	         BINDMESSAGENO,
+	         MESSAGE_NO,
+	         operatetype,
+	         message_sequenceno,
+	         create_userid)
+	      values
+	        (#{bindId,jdbcType=VARCHAR},
+	         #{houseType,jdbcType=DECIMAL},
+	         #{houseId,jdbcType=DECIMAL},
+	         #{bindMessageType,jdbcType=DECIMAL},
+			 #{bindMessageNo,jdbcType=DECIMAL},
+	         #{messageNo,jdbcType=DECIMAL},
+			 ${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_SAVE},
+	         #{messageSequenceNo},
+	         #{userId,jdbcType=DECIMAL})
+	</insert>
+	
+	<update id="updateData" parameterType="com.aotain.common.policyapi.model.HousePolicyBind">
+		update IDC_ISMS_CFG_HOUSEPOLICYBIND
+	         set HOUSE_TYPE         = #{houseType,jdbcType=DECIMAL},
+	             HOUSE_ID           = #{houseId,jdbcType=DECIMAL},
+	             MESSAGE_TYPE       = #{bindMessageType,jdbcType=DECIMAL},
+	             BINDMESSAGENO      = #{bindMessageNo,jdbcType=DECIMAL},
+	             operatetype        = ${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_UPDATE},
+	             message_sequenceno = #{messageSequenceNo,jdbcType=DECIMAL},
+	             create_time = sysdate,
+	             create_userid = #{userId,jdbcType=DECIMAL}
+	       where BIND_ID = #{bindId}
+
+	</update>
+
+	<delete id="deleteData" parameterType="com.aotain.common.policyapi.model.HousePolicyBind">
+		update IDC_ISMS_CFG_HOUSEPOLICYBIND
+	         set operatetype = ${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_DELETE},
+	         message_sequenceno = #{messageSequenceNo},
+	         create_time = sysdate
+	    where BIND_ID = #{bindId}
+
+	</delete>
+
+	<delete id="deleteByMessageNo" parameterType="com.aotain.common.policyapi.model.HousePolicyBind">
+		update IDC_ISMS_CFG_HOUSEPOLICYBIND
+		set operatetype = ${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_DELETE},
+		message_sequenceno = #{messageSequenceNo},
+		create_time = sysdate
+		where HOUSE_TYPE = #{houseType}
+		and BINDMESSAGENO = #{bindMessageNo}
+		and MESSAGE_TYPE = #{bindMessageType}
+		<if test="houseType==2">
+			and HOUSE_ID = #{houseId}
+		</if>
+
+	</delete>
+
+	<select id="getBindPolicy" parameterType="com.aotain.common.policyapi.base.BaseVo"
+			resultType="com.aotain.common.policyapi.model.HousePolicyBind">
+		select
+		 	BIND_ID AS bindId,
+		 	HOUSE_TYPE AS houseType,
+		 	HOUSE_ID AS houseId,
+		 	MESSAGE_TYPE AS bindMessageType,
+		 	BINDMESSAGENO AS bindMessageNo,
+		 	MESSAGE_NO AS messageNo,
+		 	operatetype AS operateType,
+		 	message_sequenceno AS messageSequenceNo,
+			<if test="topTaskId!=null">
+				#{topTaskId} AS topTaskId,
+			</if>
+		 	133 as messageType,
+		 	1 as probeType
+		from IDC_ISMS_CFG_HOUSEPOLICYBIND
+		where message_type = #{messageType}
+		and bindmessageno = #{messageNo}
+		and operatetype in (1,2)
+	</select>
+
+	<select id="selectByPrimaryKey" parameterType="long" resultType="com.aotain.common.policyapi.model.HousePolicyBind">
+		select
+		 	BIND_ID AS bindId,
+		 	HOUSE_TYPE AS houseType,
+		 	HOUSE_ID AS houseId,
+		 	MESSAGE_TYPE AS bindMessageType,
+		 	BINDMESSAGENO AS bindMessageNo,
+		 	MESSAGE_NO AS messageNo,
+		 	operatetype AS operationType,
+		 	message_sequenceno AS messageSequenceNo,
+		 	133 as messageType,
+		 	1 as probeType
+		from IDC_ISMS_CFG_HOUSEPOLICYBIND
+		where BIND_ID = #{bindId}
+		and operatetype in (1,2)
+	</select>
+
+
+	<select id="selectAllHousePolicyBind" resultType="com.aotain.common.policyapi.model.HousePolicyBind">
+		select
+		BIND_ID AS bindId,
+		HOUSE_TYPE AS houseType,
+		HOUSE_ID AS houseId,
+		MESSAGE_TYPE AS bindMessageType,
+		BINDMESSAGENO AS bindMessageNo,
+		MESSAGE_NO AS messageNo,
+		operatetype AS operationType,
+		message_sequenceno AS messageSequenceNo,
+		133 as messageType,
+		1 as probeType
+		from IDC_ISMS_CFG_HOUSEPOLICYBIND
+		order by OPERATETYPE asc
+	</select>
+</mapper>

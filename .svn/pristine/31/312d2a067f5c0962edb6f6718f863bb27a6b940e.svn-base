@@ -1,0 +1,149 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import com.aotain.cu.annotation.Export;
+
+public class UserHHIPSegInformationDTO extends BaseDTO implements Serializable {
+
+	private static final long serialVersionUID = -3274485057722343579L;
+	
+	@Export(title="IP地址段ID", id=1)
+	private Long ipSegmentId;
+	
+	@Export(title="占用机房ID", id=2)
+	private Long hhId;
+	
+	private Long userId;
+	
+	@Export(title="起始IP地址", id=3)
+	private String startIP;
+	
+	@Export(title="终止IP地址", id=4)
+	private String endIP;	
+	
+	private Date creationDate;
+	
+	private Date updateDate;
+	
+	private String houseName;
+	
+	private Long createUserId;
+	
+	private String decimalStartIP; //起始IP地址对应的十进制
+	
+	private String decimalEndIP; //终止IP地址对应的十进制
+	
+	private Integer operationType; //操作类型（0-完成记录、1-新增、2-修改(变更)，3-删除）
+	
+	private Integer dealFlag; //处理状态（0-未上报、1-提交上报、2-接口文件已经生成、3-文件生成失败，4-上报成功） 
+
+	public Long getIpSegmentId() {
+		return ipSegmentId;
+	}
+
+	public Long getHhId() {
+		return hhId;
+	}
+
+	
+	
+	public String getHouseName() {
+		return houseName;
+	}
+
+	public void setHouseName(String houseName) {
+		this.houseName = houseName;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public String getStartIP() {
+		return startIP;
+	}
+
+	public String getEndIP() {
+		return endIP;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public Long getCreateUserId() {
+		return createUserId;
+	}
+
+	public String getDecimalStartIP() {
+		return decimalStartIP;
+	}
+
+	public String getDecimalEndIP() {
+		return decimalEndIP;
+	}
+
+	public Integer getOperationType() {
+		return operationType;
+	}
+
+	public Integer getDealFlag() {
+		return dealFlag;
+	}
+
+	public void setIpSegmentId(Long ipSegmentId) {
+		this.ipSegmentId = ipSegmentId;
+	}
+
+	public void setHhId(Long hhId) {
+		this.hhId = hhId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public void setStartIP(String startIP) {
+		this.startIP = startIP;
+	}
+
+	public void setEndIP(String endIP) {
+		this.endIP = endIP;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public void setCreateUserId(Long createUserId) {
+		this.createUserId = createUserId;
+	}
+
+	public void setDecimalStartIP(String decimalStartIP) {
+		this.decimalStartIP = decimalStartIP;
+	}
+
+	public void setDecimalEndIP(String decimalEndIP) {
+		this.decimalEndIP = decimalEndIP;
+	}
+
+	public void setOperationType(Integer operationType) {
+		this.operationType = operationType;
+	}
+
+	public void setDealFlag(Integer dealFlag) {
+		this.dealFlag = dealFlag;
+	}
+
+	
+}

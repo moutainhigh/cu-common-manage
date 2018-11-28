@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aotain.common.policyapi.mapper.EuDeviceStatusMapper">
+    <sql id="euDeviceColumns">
+        r_type AS rType,
+        message_no AS messageNo,
+        r_freq AS rFreq,
+        operatetype AS operationType,
+        message_sequenceno AS messageSequenceNo,
+        create_time AS createTime
+    </sql>
+
+    <insert id="insertData" parameterType="com.aotain.common.policyapi.model.EuDeviceStatus" >
+      INSERT INTO idc_isms_cfg_devicestatus(r_type,message_no,r_freq,operatetype,message_sequenceno,create_time)
+      VALUES (#{rType,jdbcType=DECIMAL},#{messageNo,jdbcType=DECIMAL},#{rFreq,jdbcType=DECIMAL},
+      ${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_SAVE},#{messageSequenceNo,jdbcType=DECIMAL},sysdate)
+    </insert>
+
+    <select id="selectByRType" parameterType="integer" resultType="com.aotain.common.policyapi.model.EuDeviceStatus">
+        select
+          <include refid="euDeviceColumns"/>
+        from
+          idc_isms_cfg_devicestatus
+        where r_type = #{rType}
+        and  operatetype != ${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_DELETE}
+    </select>
+
+    <select id="selectAllEuDeviceStatus" resultType="com.aotain.common.policyapi.model.EuDeviceStatus">
+        select
+        <include refid="euDeviceColumns"/>
+        from
+        idc_isms_cfg_devicestatus
+
+    </select>
+
+    <update id="updateData" parameterType="com.aotain.common.policyapi.model.EuDeviceStatus">
+        update idc_isms_cfg_devicestatus
+        SET message_sequenceno = #{messageSequenceNo,jdbcType=DECIMAL},
+            r_freq = #{rFreq,jdbcType=DECIMAL},
+            operatetype = ${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_UPDATE},
+            create_time = sysdate
+        where r_type = #{rType}
+    </update>
+
+    <update id="deleteData" />
+
+</mapper>

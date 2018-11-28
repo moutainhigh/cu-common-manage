@@ -1,0 +1,27 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+
+import com.aotain.cu.annotation.ExpSheet;
+import com.aotain.cu.annotation.Export;
+import com.aotain.cu.serviceapi.model.HouseGatewayInformation;
+
+@ExpSheet(name="机房链路信息")
+public class HouseGatewayInformationDTO extends HouseGatewayInformation implements Serializable {
+
+	private static final long serialVersionUID = -2390391758110792271L;
+	
+	@Export(title="机房名称", id=1)
+	private String houseName; //机房名称
+
+	private Long preBandWidth;//变更之前带宽
+
+	public String getHouseName() {
+		return houseName;
+	}
+
+	public void setHouseName(String houseName) {
+		this.houseName = houseName;
+	}
+
+}

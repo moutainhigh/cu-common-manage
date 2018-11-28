@@ -1,0 +1,11 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+
+import com.aotain.cu.serviceapi.model.UserVirtualInformation;
+
+public class UserVirtualInformationDTO extends UserVirtualInformation implements Serializable {
+
+	private static final long serialVersionUID = -2065058425270198324L;
+
+}

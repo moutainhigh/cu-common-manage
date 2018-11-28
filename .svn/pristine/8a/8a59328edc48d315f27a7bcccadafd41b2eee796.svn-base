@@ -1,0 +1,248 @@
+package com.aotain.common.utils.tools;
+
+import java.math.BigInteger;
+
+import org.apache.commons.lang.StringUtils;
+
+public class IpUtils {
+
+	private static final String zeroString = "0000:0000:0000:0000:0000:0000:0000:0000";
+	private static final String sevenZString = ":0000:0000:0000:0000:0000:0000:0000";
+	private static final String rSevenZString = "0000:0000:0000:0000:0000:0000:0000:";
+
+	/**
+	 * 将所有IPV6形式的IP字符串转成IPV6字节形式
+	 * 
+	 * @param ipv6
+	 *            冒分16进制标准、冒分16进制缩写、0位压缩法、内嵌IPV4
+	 * @return
+	 */
+	public static byte[] parseIpv6(final String ipv6) {
+		if (StringUtils.isBlank(ipv6)) {
+			return null;
+		}
+		String tIpv6 = ipv6;
+		// 判断ipv6的类型，调用四种不同的转换方法
+		String standardIpv6 = "";
+		if (ipv6.matches(".*\\:\\:.*")) { // 0位压缩转标准
+			standardIpv6 = compressIpv6ToStandard(tIpv6, 8);
+		} else if (ipv6.matches(".*::[\\d.]+$")) {
+			standardIpv6 = innerIpv6ToStandard(ipv6);// 内嵌IPV4转标准
+		}
+		// 将标准的ipv6转成byte
+		// 1. 拆成8个段
+		String[] ip6Str = standardIpv6.split(":");
+		String[] ipStr = new String[16];
+		byte[] ip6Byte = new byte[16];
+		// 将数组中的每两位取存到长度为16的字符串数组中
+		for (int j = 0, i = 0; i < ip6Str.length; j = j + 2, i++) {
+			ipStr[j] = ip6Str[i].substring(0, 2);
+			ipStr[j + 1] = ip6Str[i].substring(2, 4);
+		}
+		// 将ipStr中的十六进制数转成十进制，再转成byte类型存放到16个字的数组中
+		// 2. 遍历逐段转成10进制byte
+		for (int i = 0; i < ip6Byte.length; i++) {
+			ip6Byte[i] = (byte) Integer.parseInt(ipStr[i], 16);
+		}
+		return ip6Byte;
+	}
+
+	/**
+	 * 将16进制的ipv6字节数组，转成内嵌IPV4
+	 * 
+	 * @param ipv6Bytes
+	 * @return
+	 */
+	public static String ipv6ToHexStringInnerIpv4(byte[] ipv6Bytes) {
+		// 先转化为标准
+		String ipv6ToStandard = ipv6ToHexString(ipv6Bytes);
+		// 截取后两位转化为十进制
+		String substring = ipv6ToStandard.substring(30);
+		String substring2 = ipv6ToStandard.substring(0, 30);
+		String[] split = substring.split(":");
+		int parseInt = Integer.parseInt(split[0].substring(0, 2), 16);
+		int parseInt2 = Integer.parseInt(split[0].substring(2), 16);
+		int parseInt3 = Integer.parseInt(split[1].substring(0, 2), 16);
+		int parseInt4 = Integer.parseInt(split[1].substring(2), 16);
+		StringBuilder sb = new StringBuilder();
+		sb.append(substring2).append(parseInt).append(".").append(parseInt2).append(".").append(parseInt3).append(".")
+				.append(parseInt4);
+		// String hex = "0xfff";
+		// Integer x = Integer.parseInt(hex.substring(2),16);//从第2个字符开始截取
+		// System.out.println(x);
+		return sb.toString();
+	}
+
+	/**
+	 * 将16进制的ipv6字节数组，转成0位压缩法
+	 * 
+	 * @param ipv6Bytes
+	 * @return
+	 */
+	public static String ipv6ToHexStringCompress(byte[] ipv6Bytes) {
+		// 当有多个：：出现的问题没有解决:"0000:0023:0000:1240:FF00:0022:1111:0001"
+		// 先转化为标准
+		String ipv6ToStandard = ipv6ToHexString(ipv6Bytes);
+		// 当有四个都是0的则用空字符串代替
+		StringBuilder sb = new StringBuilder();
+		String[] split = ipv6ToStandard.split(":");
+		for (int i = 0; i < split.length; i++) {
+			if (split[i].equals("0000") && i == 0 || split[i].equals("0000") && i == 7) {
+				split[i] = ":";
+			} else if (split[i].equals("0000")) {
+				split[i] = "";
+			}
+			sb.append(split[i]).append(":");
+		}
+		return sb.toString().substring(0, sb.toString().length() - 1);
+	}
+
+	/**
+	 * 将16进制的ipv6字节数组，转成冒分16进制标准缩写
+	 * 
+	 * @param ipv6Bytes
+	 * @return
+	 */
+	public static String ipv6ToHexStringShort(byte[] ipv6Bytes) {
+		// 先转化为标准表示法
+		String ipv6ToStandard = ipv6ToHexString(ipv6Bytes);
+		// 再根据是否有几段有0的个数判断改为标准缩写
+		StringBuilder sb = new StringBuilder();
+		String[] split = ipv6ToStandard.split(":");
+		for (int i = 0; i < split.length; i++) {
+			// 判断是否包含0或者是几个0
+			if (split[i].substring(0, 4).equals("0000")) {
+				split[i] = "0";
+				sb.append(split[i]).append(":");
+				continue;
+			} else if (split[i].substring(0, 3).equals("000")) {
+				split[i] = split[i].substring(split[i].length() - 1);
+				sb.append(split[i]).append(":");
+				continue;
+			} else if (split[i].substring(0, 2).equals("00")) {
+				split[i] = split[i].substring(2, split[i].length());
+				sb.append(split[i]).append(":");
+				continue;
+			} else if (split[i].substring(0, 1).equals("0")) {
+				split[i] = split[i].substring(1, split[i].length());
+				sb.append(split[i]).append(":");
+				continue;
+			}
+			sb.append(split[i]).append(":");
+		}
+		return sb.toString().substring(0, sb.toString().length() - 1);
+	}
+
+	/**
+	 * 将16进制的ipv6字节数组，转成冒分16进制标准
+	 * 
+	 * @param ipv6Bytes
+	 * @return
+	 */
+	public static String ipv6ToHexString(byte[] ipv6Bytes) {
+		StringBuilder sb = new StringBuilder(ipv6Bytes.length * 2);
+		// for (byte b : ipv6Bytes) {
+		// sb.append(String.format("%02x", new Integer(b & 0xff))).append(":");
+		// }01 23 34 56 78 910 1112 1314
+		for (int i = 0; i < ipv6Bytes.length; i++) {
+			if (i % 2 == 1) {
+				sb.append(String.format("%02x", new Integer(ipv6Bytes[i] & 0xff))).append(":");
+			} else {
+				sb.append(String.format("%02x", new Integer(ipv6Bytes[i] & 0xff)));
+			}
+		}
+		return sb.toString().substring(0, sb.toString().length() - 1);
+	}
+
+	/**
+	 * 将16进制的ipv6字节数组，转成大整数
+	 * 
+	 * @param ipv6Bytes
+	 * @return
+	 */
+	public static BigInteger ipv6ToBigInteger(byte[] ipv6Bytes) {
+		return new BigInteger(ipv6Bytes);
+	}
+
+	/**
+	 * 0位压缩转化为标准ipv6
+	 * 
+	 * @param compressIpv6
+	 * @return
+	 */
+	public static String compressIpv6ToStandard(String compressIpv6, int maxLength) {
+		// 如果tIpv6是0位压缩类型则转化为标准形式如：FFFF:FF01::1101:cccc ::FFFF FFFF::
+		String[] split = compressIpv6.split("\\:{1,2}");
+		int segCount = split.length;
+		if (compressIpv6.endsWith("::")) {
+			return compressIpv6.replace("::", ":" + buildZoreSeg(maxLength - segCount));
+		} else if (compressIpv6.startsWith("::")) {
+			return compressIpv6.replace("::", buildZoreSeg(maxLength - segCount + 1) + ":");
+		}
+		return compressIpv6.replace("::", ":" + buildZoreSeg(maxLength - segCount) + ":");
+	}
+
+	private static String buildZoreSeg(int cnt) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < cnt; i++) {
+			if (i > 0) {
+				sb.append(":");
+			}
+			sb.append("0000");
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * 内嵌ipv4转化为标准ipv6
+	 * 
+	 * @param innerIpv6
+	 * @return
+	 */
+	public static String innerIpv6ToStandard(String innerIpv6) {
+		// 为了实现IPv4-IPv6互通，IPv4地址会嵌入IPv6地址中，此时地址常表示为：X:X:X:X:X:X:d.d.d.d，前96bit采用冒分十六进制表示，
+		// 而最后32bit地址则使用IPv4的点分十进制表示，例如::192.168.0.1与::FFFF:192.168.0.1就是两个典型的例子 。
+		// int segCount = compressIpv6.split("\\:{1,2}").length;
+		int indexOfSplit = innerIpv6.lastIndexOf(":");
+		String ipv6Split = innerIpv6.substring(0, indexOfSplit);
+		String ipv4Split = innerIpv6.substring(indexOfSplit + 1);
+		if (innerIpv6.matches("\\:\\:\\d+\\.\\d+\\.\\d+\\.\\d+")) {
+			ipv6Split = innerIpv6.replaceAll("\\\\d+\\\\.\\\\d+\\\\.\\\\d+\\\\.\\\\d+$", "");
+			ipv4Split = innerIpv6.replaceAll("^.*\\:\\:", "");
+		}
+
+		String compressIpv6ToStandard = compressIpv6ToStandard(ipv6Split, 6);
+		// 获取第二段是内嵌的ipv4,ipv4转化为ipv6
+		String[] splitIpv4 = ipv4Split.split("\\.");
+		String sevenSeg = Integer.toHexString(Integer.parseInt(splitIpv4[0]))
+				+ Integer.toHexString(Integer.parseInt(splitIpv4[1]));
+		String eightSeg = Integer.toHexString(Integer.parseInt(splitIpv4[2]))
+				+ Integer.toHexString(Integer.parseInt(splitIpv4[3]));
+		String standardIpv6 = compressIpv6ToStandard + ":" + sevenSeg + ":" + eightSeg;
+		return standardIpv6;
+	}
+
+	public static void main(String[] args) {
+		// System.out.println(compressIpv6ToStandard("::"));
+		// System.out.println(compressIpv6ToStandard("AAAA::BBBB:8888"));
+		// System.out.println(innerIpv6ToStandard("::FFFF:192.168.0.1"));
+		// System.out.println(innerIpv6ToStandard("::192.168.0.1"));
+		// System.out.println(parseIpv6("::192.168.0.1"));
+		// System.out.println(innerIpv6ToStandard("AAAA:BBBB:8888::192.168.0.1"));
+		// byte[] HEX_CHAR = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',
+		// 'b', 'c', 'd', 'e', 'f' };
+		// System.out.println(ipv6ToHexString(HEX_CHAR));
+		String ipv6ToStandard = "0000:0023:0000:1240:FF00:0022:1111:0001";
+		String substring = ipv6ToStandard.substring(30);
+		String substring2 = ipv6ToStandard.substring(0, 30);
+		String[] split = substring.split(":");
+		int parseInt = Integer.parseInt(split[0].substring(0, 2), 16);
+		int parseInt2 = Integer.parseInt(split[0].substring(2), 16);
+		int parseInt3 = Integer.parseInt(split[1].substring(0, 2), 16);
+		int parseInt4 = Integer.parseInt(split[1].substring(2), 16);
+		StringBuilder sb = new StringBuilder();
+		sb.append(substring2).append(parseInt).append(".").append(parseInt2).append(".").append(parseInt3).append(".")
+				.append(parseInt4);
+		System.out.println(sb.toString());
+	}
+}

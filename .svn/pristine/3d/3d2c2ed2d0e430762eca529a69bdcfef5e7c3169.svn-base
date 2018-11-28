@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aotain.common.policyapi.mapper.IpAddressAllocationMapper">
+    <resultMap id="BaseResultMap" type="com.aotain.common.policyapi.model.IpAddressAllocation">
+        <result column="DATA_ID" jdbcType="DECIMAL" property="dataId" />
+        <result column="MESSAGE_NO" jdbcType="DECIMAL" property="messageNo" />
+        <result column="DATA_TYPE" jdbcType="DECIMAL" property="dataType" />
+        <result column="SERVER_IP" jdbcType="VARCHAR" property="serverIp" />
+        <result column="SERVER_PORT" jdbcType="DECIMAL" property="serverPort" />
+        <result column="USERNAME" jdbcType="VARCHAR" property="userName" />
+        <result column="PASSWORD" jdbcType="VARCHAR" property="password" />
+        <result column="FILENAME" jdbcType="VARCHAR" property="fileName" />
+        <result column="FILESTATUS" jdbcType="DECIMAL" property="fileStatus" />
+        <result column="GENERATETIME" jdbcType="TIMESTAMP" property="generateTime" />
+        <result column="OPERATETYPE" jdbcType="DECIMAL" property="operationType" />
+        <result column="MESSAGE_SEQUENCENO" jdbcType="DECIMAL" property="messageSequenceNo" />
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="FILENAME2" jdbcType="VARCHAR" property="fileName2" />
+        <result column="FILENAME3" jdbcType="VARCHAR" property="fileName3" />
+    </resultMap>
+    <insert id="insert" parameterType="com.aotain.common.policyapi.model.IpAddressAllocation">
+        insert into DPI_V1_CFG_DATAUPDATE (DATA_ID, MESSAGE_NO, DATA_TYPE,
+        SERVER_IP, SERVER_PORT, USERNAME,
+        PASSWORD, FILENAME, FILESTATUS,
+        GENERATETIME, OPERATETYPE, MESSAGE_SEQUENCENO,
+        CREATE_TIME, FILENAME2, FILENAME3
+        )
+        values (#{dataId,jdbcType=DECIMAL}, #{messageNo,jdbcType=DECIMAL}, #{dataType,jdbcType=DECIMAL},
+        #{serverIp,jdbcType=VARCHAR}, #{serverPort,jdbcType=DECIMAL}, #{userName,jdbcType=VARCHAR},
+        #{password,jdbcType=VARCHAR}, #{fileName,jdbcType=VARCHAR}, #{fileStatus,jdbcType=DECIMAL},
+        #{generateTime,jdbcType=TIMESTAMP}, #{operationType,jdbcType=DECIMAL}, #{messageSequenceNo,jdbcType=DECIMAL},
+        #{createTime,jdbcType=TIMESTAMP}, #{fileName2,jdbcType=VARCHAR}, #{fileName3,jdbcType=VARCHAR}
+        )
+    </insert>
+    <insert id="insertData" parameterType="com.aotain.common.policyapi.model.IpAddressAllocation">
+        insert into DPI_V1_CFG_DATAUPDATE
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="dataId != null">
+                DATA_ID,
+            </if>
+            <if test="messageNo != null">
+                MESSAGE_NO,
+            </if>
+            <if test="dataType != null">
+                DATA_TYPE,
+            </if>
+            <if test="serverIp != null">
+                SERVER_IP,
+            </if>
+            <if test="serverPort != null">
+                SERVER_PORT,
+            </if>
+            <if test="userName != null">
+                USERNAME,
+            </if>
+            <if test="password != null">
+                PASSWORD,
+            </if>
+            <if test="fileName != null">
+                FILENAME,
+            </if>
+            <if test="fileStatus != null">
+                FILESTATUS,
+            </if>
+            <if test="generateTime != null">
+                GENERATETIME,
+            </if>
+            <if test="operationType != null">
+                OPERATETYPE,
+            </if>
+            <if test="messageSequenceNo != null">
+                MESSAGE_SEQUENCENO,
+            </if>
+
+            CREATE_TIME,
+
+            <if test="fileName2 != null">
+                FILENAME2,
+            </if>
+            <if test="fileName3 != null">
+                FILENAME3,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="dataId != null">
+                #{dataId,jdbcType=DECIMAL},
+            </if>
+            <if test="messageNo != null">
+                #{messageNo,jdbcType=DECIMAL},
+            </if>
+            <if test="dataType != null">
+                #{dataType,jdbcType=DECIMAL},
+            </if>
+            <if test="serverIp != null">
+                #{serverIp,jdbcType=VARCHAR},
+            </if>
+            <if test="serverPort != null">
+                #{serverPort,jdbcType=DECIMAL},
+            </if>
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="fileName != null">
+                #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="fileStatus != null">
+                #{fileStatus,jdbcType=DECIMAL},
+            </if>
+            <if test="generateTime != null">
+                #{generateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="operationType != null">
+                #{operationType,jdbcType=DECIMAL},
+            </if>
+            <if test="messageSequenceNo != null">
+                #{messageSequenceNo,jdbcType=DECIMAL},
+            </if>
+
+            sysdate,
+
+            <if test="fileName2 != null">
+                #{filename2,jdbcType=VARCHAR},
+            </if>
+            <if test="fileName3 != null">
+                #{filename3,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateData" parameterType="com.aotain.common.policyapi.model.IpAddressAllocation" >
+        UPDATE DPI_V1_CFG_DATAUPDATE
+        SET
+            DATA_ID = #{dataId,jdbcType=DECIMAL},
+            DATA_TYPE = #{dataType,jdbcType=DECIMAL},
+            SERVER_IP = #{serverIp,jdbcType=VARCHAR},
+            SERVER_PORT = #{serverPort,jdbcType=DECIMAL},
+            USERNAME = #{userName,jdbcType=VARCHAR},
+            PASSWORD = #{password,jdbcType=VARCHAR},
+            FILENAME = #{fileName,jdbcType=VARCHAR},
+            FILESTATUS = #{fileStatus,jdbcType=DECIMAL},
+            OPERATETYPE = #{operationType,jdbcType=DECIMAL},
+            MESSAGE_SEQUENCENO = #{messageSequenceNo,jdbcType=DECIMAL},
+            CREATE_TIME = sysdate,
+            FILENAME2 = #{fileName2,jdbcType=VARCHAR},
+            FILENAME3 = #{fileName3,jdbcType=VARCHAR}
+
+        WHERE DATA_TYPE = #{dataType}
+    </update>
+
+    <delete id="deleteData" parameterType="com.aotain.common.policyapi.model.IpAddressAllocation" >
+        UPDATE DPI_V1_CFG_DATAUPDATE
+        SET
+             OPERATETYPE = #{operationType,jdbcType=DECIMAL},
+             MESSAGE_SEQUENCENO = #{messageSequenceNo,jdbcType=DECIMAL},
+             CREATE_TIME = sysdate
+        WHERE DATA_TYPE = #{dataType}
+
+    </delete>
+
+    <select id="selectByDataType" parameterType="int" resultMap="BaseResultMap">
+        select * FROM DPI_V1_CFG_DATAUPDATE
+        WHERE DATA_TYPE = #{dataType}
+    </select>
+
+</mapper>

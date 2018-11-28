@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aotain.common.policyapi.mapper.AreaGroupMapper">
+
+    <resultMap id="AreaGroupMap" type="com.aotain.common.policyapi.model.AreaGroup" >
+        <id column="AREAGROUP_ID" property="areaGroupId" jdbcType="BIGINT" />
+        <result column="AREAGROUP_NAME" property="areaGroupName" jdbcType="VARCHAR" />
+        <result column="AREA_TYPE" property="areaType" jdbcType="INTEGER" />
+        <result column="MESSAGE_NO" property="messageNo" jdbcType="BIGINT" />
+        <result column="OPERATETYPE" property="operationType" jdbcType="INTEGER" />
+        <result column="MESSAGE_SEQUENCENO" property="messageSequenceNo" jdbcType="BIGINT" />
+        <result column="CREATE_TIME" property="createTime" jdbcType="DATE" />
+        <result column="SEQOPERTYPE" property="seqOperType" jdbcType="INTEGER" />
+        <result column="AREA_ID" property="areaId" jdbcType="BIGINT" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        AREAGROUP_ID, AREAGROUP_NAME, AREA_TYPE, MESSAGE_NO, OPERATETYPE,MESSAGE_SEQUENCENO,CREATE_TIME,SEQOPERTYPE,AREA_ID
+    </sql>
+
+    <insert id="insertData" parameterType="com.aotain.common.policyapi.model.AreaGroup" >
+        <selectKey resultType="long" order="BEFORE" keyProperty="areaGroupId">
+            SELECT SEQ_DPI_V1_CFG_AREAGROUP_ID.Nextval as areaGroupId from DUAL
+        </selectKey>
+        insert into DPI_V1_CFG_AREAGROUP(
+        <include refid="Base_Column_List" />
+        ) values(
+        #{areaGroupId,jdbcType=BIGINT},
+        #{areaGroupName,jdbcType=VARCHAR},
+        #{areaType,jdbcType=INTEGER},
+        #{messageNo,jdbcType=BIGINT},
+        #{operationType,jdbcType=BIGINT},
+        #{messageSequenceNo,jdbcType=BIGINT},
+        SYSDATE,
+        #{seqOperType,jdbcType=BIGINT},
+        #{areaId,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <select id="selectSour" parameterType="java.lang.Long" resultMap="AreaGroupMap">
+        select <include refid="Base_Column_List" /> from DPI_V1_CFG_AREAGROUP
+        where AREA_TYPE = 0 and MESSAGE_NO = #{messageNo,jdbcType=BIGINT} and OPERATETYPE in (1,2)
+    </select>
+
+    <select id="selectDest" parameterType="java.lang.Long" resultMap="AreaGroupMap">
+        select <include refid="Base_Column_List" /> from DPI_V1_CFG_AREAGROUP
+        where AREA_TYPE = 1 and MESSAGE_NO = #{messageNo,jdbcType=BIGINT} and OPERATETYPE in (1,2)
+    </select>
+
+    <select id="selectOne" parameterType="com.aotain.common.policyapi.model.AreaGroup" resultMap="AreaGroupMap">
+        select <include refid="Base_Column_List" /> from DPI_V1_CFG_AREAGROUP where OPERATETYPE = 1
+        <if test="messageNo != null and messageNo != ''">
+            and MESSAGE_NO = #{messageNo,jdbcType=BIGINT}
+        </if>
+        <if test="areaId != null and areaId != ''">
+            and AREA_ID = #{areaId,jdbcType=BIGINT}
+        </if>
+    </select>
+
+    <delete id="deleteDataByMessageNo" parameterType="java.lang.Long" >
+        delete from DPI_V1_CFG_AREAGROUP
+        where MESSAGE_NO = #{messageNo,jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteData" parameterType="java.lang.Long" >
+        delete from DPI_V1_CFG_AREAGROUP
+        where AREA_ID = #{areaId,jdbcType=BIGINT}
+    </delete>
+
+    <update id="updateData" parameterType="java.lang.Long" >
+        update DPI_V1_CFG_AREAGROUP set OPERATETYPE = 3, SEQOPERTYPE = 3, CREATE_TIME =  SYSDATE
+        where MESSAGE_NO = #{messageNo,jdbcType=BIGINT}
+    </update>
+
+</mapper>

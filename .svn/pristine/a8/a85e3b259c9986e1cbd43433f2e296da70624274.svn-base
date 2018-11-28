@@ -1,0 +1,64 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+
+public class ResultDto implements Serializable {
+
+	public enum ResultCodeEnum{
+		SUCCESS(0),ERROR(1);
+		private Integer code;
+
+		ResultCodeEnum(int code){
+			this.code = code;
+		}
+
+		public Integer getCode() {
+			return code;
+		}
+	}
+
+	private static final long serialVersionUID = -6637293920201489039L;
+	
+	/**
+	 * 结果代码，0-成功
+	 */
+	private int resultCode;
+
+	/**
+	 * 结果描述
+	 */
+	private String resultMsg;
+
+	/*******操作码/状态码******/
+	private int statusCode;
+
+	public int getResultCode() {
+		return resultCode;
+	}
+
+	public void setResultCode(int resultCode) {
+		this.resultCode = resultCode;
+	}
+
+	public String getResultMsg() {
+		return resultMsg;
+	}
+
+	public void setResultMsg(String resultMsg) {
+		this.resultMsg = resultMsg;
+	}
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    @Override
+	public String toString() {
+		return "ResponseDto [resultCode=" + resultCode + ", restultMsg=" + resultMsg + "]";
+	}
+	
+}

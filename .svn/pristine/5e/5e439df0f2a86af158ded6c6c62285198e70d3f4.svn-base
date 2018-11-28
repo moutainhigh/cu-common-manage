@@ -1,0 +1,8 @@
+# \u6570\u636E\u5E93\u76F8\u5173\u914D\u7F6E\u4FE1\u606F
+webservice.url=http://192.168.5.200:8088/passport/webservice/userservice
+isms.driverClassName=oracle.jdbc.driver.OracleDriver
+isms.url=jdbc:oracle:thin:@192.168.50.155:1521:bsmp
+isms.username=cu_v6
+isms.password=VePK9pAm
+isms.validationQuery=select sysdate from dual
+isms.clusterId=21

@@ -1,0 +1,171 @@
+package com.aotain.cu.serviceapi.utils;
+
+import java.lang.reflect.Method;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.aotain.cu.serviceapi.model.ServiceAddress;
+import com.netflix.hystrix.HystrixCommand;
+import com.netflix.hystrix.HystrixCommand.Setter;
+import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixCommandProperties;
+
+import feign.Logger;
+import feign.Request.Options;
+import feign.RequestInterceptor;
+import feign.Retryer;
+import feign.Target;
+import feign.codec.Decoder;
+import feign.codec.Encoder;
+import feign.hystrix.HystrixFeign;
+import feign.hystrix.SetterFactory;
+import feign.jackson.JacksonDecoder;
+import feign.jackson.JacksonEncoder;
+import feign.slf4j.Slf4jLogger;
+
+/**
+ * Feign构建工具
+ * 
+ * @author liuz@aotian.com
+ * @date 2018年8月20日 下午4:21:50
+ */
+public class BaseFeignBuilder {
+	private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(BaseFeignBuilder.class);
+    private static ConcurrentHashMap<String, Object> cacheFeignMap = new ConcurrentHashMap<String, Object>();
+    private static ConcurrentHashMap<String, String> cacheAddressMap = new ConcurrentHashMap<String, String>();
+
+    /**
+     * 构建HystrixFeign,具有Hystrix提供的熔断和回退功能,JacksonEncoder、JacksonDecoder、Slf4jLogger、Logger.Level.FULL
+     * @param apiType 使用feign访问的接口类,如MedBodyClient.class
+     * @param clientName 配置文件中的ribbon client名字
+     * @param fallback 回退类
+     * @param url 添加网址
+     * @return
+     */
+    public static <T> T buildHystrixFeign(Class<T> apiType, T fallback, String url,EncodeDecodeType edType,RequestInterceptor interceptor) {
+        // 之前用GsonEncoder()和GsonDecoder()对Date类型支持不好，改成JacksonEncoder和JacksonDecoder，日期转换正常
+		Encoder en = new JacksonEncoder();
+		Decoder de = new JacksonDecoder();
+		switch (edType) {
+		case EDT_JSON_JSON:
+			en = new JacksonEncoder();
+			de = new JacksonDecoder();
+			break;
+		case EDT_JSON_PLAIN:
+			en = new JacksonEncoder();
+			de = new Decoder.Default();
+			break;
+		case EDT_PLAIN_PLAIN:
+			en = new Encoder.Default();
+			de = new Decoder.Default();
+			break;
+		case EDT_PLAIN_JSON:
+			en = new Encoder.Default();
+			de = new JacksonDecoder();
+			break;
+		}
+       return buildHystrixFeign(apiType, fallback, url, en, de,
+                new Slf4jLogger(BaseFeignBuilder.class), Logger.Level.FULL,interceptor);
+    }
+    
+    /**
+     * 构建HystrixFeign,具有Hystrix提供的熔断和回退功能
+     * @param apiType 使用feign访问的接口类,如MedBodyClient.class
+     * @param clientName clientName 配置文件中的ribbon client名字
+     * @param fallback 回退类
+     * @param url 添加网址
+     * @param encoder 编码器
+     * @param decoder 解码器
+     * @param logger 日志对象
+     * @param logLevel 日志级别
+     * @return
+     */
+    public static <T> T buildHystrixFeign(final Class<T> apiType, T fallback, String url, Encoder encoder, Decoder decoder,
+            Logger logger, Logger.Level logLevel,RequestInterceptor interceptor) {
+    	feign.hystrix.HystrixFeign.Builder builder = HystrixFeign.builder();
+    	if(interceptor != null){
+    		builder = builder.requestInterceptor(interceptor);
+    	}
+        return builder.encoder(encoder).decoder(decoder).logger(logger).logLevel(logLevel)
+                //options添加Feign请求响应超时时间
+                .options(new Options(60 * 1000, 60 * 1000)).retryer(Retryer.NEVER_RETRY)
+                .setterFactory(new SetterFactory() {
+                    @Override
+                    public Setter create(Target<?> target, Method method) {
+                        //添加Hstrix请求响应超时时间
+                        return HystrixCommand.Setter
+                                .withGroupKey(HystrixCommandGroupKey.Factory.asKey(apiType.getClass().getSimpleName()))
+                                .andCommandPropertiesDefaults(
+                                        HystrixCommandProperties.Setter().withExecutionTimeoutInMilliseconds(60 * 1000) // 超时配置
+                        );
+                    }
+                }).target(apiType, url, fallback);
+    }
+
+    /**
+     * 获取HystrixFeign(json版)。缓存有在缓存取，缓存没有重新构建Feign
+     * @param apiType 使用feign访问的接口类,如MedBodyClient.class
+     * @param clientName clientName 配置文件中的ribbon client名字
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getCacheFeign(Class<T> apiType, String clientName, T fallback,EncodeDecodeType edType,RequestInterceptor interceptor) {
+        
+        String resultAddress = getResultAddress(clientName);
+
+        String fallbackt = (fallback==null?"null":fallback.getClass().getName());
+        String cacheKey = apiType.getName() + "-" + clientName + "-" + fallbackt + "-" + resultAddress+"-"+edType;
+        Object cacheFeign = cacheFeignMap.get(cacheKey);
+        if (cacheFeign == null) {
+            T buildFeign = buildHystrixFeign(apiType, fallback, resultAddress,edType,interceptor);
+            cacheFeignMap.put(cacheKey, buildFeign);
+            return buildFeign;
+        } else {
+            return (T) cacheFeign;
+        }
+    }
+    
+    /**
+     * 获取服务地址，取不到最新地址在缓存取旧地址，有新地址则返回新地址并刷新缓存
+     * @param clientName
+     * @return
+     */
+    public static String getResultAddress(String clientName) {
+        String recentAddress = null;
+        ServiceAddress alanServiceAddress = ServiceAddressSelector.selectOne(clientName);
+        recentAddress = alanServiceAddress == null ? "" : alanServiceAddress.toHttpUrl(null);
+        String cacheAddress = cacheAddressMap.get(clientName);
+        String resultAddress = "";
+
+        if (StringUtils.isBlank(recentAddress)) {
+            if (StringUtils.isBlank(cacheAddress)) {
+                log.error("service " + clientName + " no valid address");
+                throw new RuntimeException("service " + clientName + " no valid address");
+            } else {
+                resultAddress = cacheAddress;
+            }
+        } else {
+            resultAddress = recentAddress;
+            cacheAddressMap.put(clientName, recentAddress);
+        }
+        return resultAddress;
+    }
+    
+    /**
+     * 调用过程中数据编码解码类型
+     * 
+     * @author liuz@aotian.com
+     * @date 2018年8月21日 下午6:23:34
+     */
+	public static enum EncodeDecodeType {
+		/** 编码JSON，解码JSON*/
+		EDT_JSON_JSON, 
+		/** 编码明文，解码JSON*/
+		EDT_PLAIN_JSON, 
+		/** 编码JSON，解码JSON*/
+		EDT_JSON_PLAIN,
+		/** 编码明文，解码明文*/
+		EDT_PLAIN_PLAIN
+	}
+}

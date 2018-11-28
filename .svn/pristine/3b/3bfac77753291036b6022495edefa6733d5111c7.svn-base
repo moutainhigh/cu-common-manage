@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aotain.common.policyapi.mapper.MessageNameMapper">
+
+    <insert id="addMessageName" parameterType="com.aotain.common.policyapi.base.BaseVo">
+        insert into DPI_V1_CFG_MESSAGENO (MESSAGE_NO,MESSAGE_TYPE,MESSAGE_NAME,OPERTYPE)
+        values (#{messageNo},#{messageType},#{messageName},${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_SAVE})
+    </insert>
+
+    <update id="modifyMessageName" parameterType="com.aotain.common.policyapi.base.BaseVo">
+        update DPI_V1_CFG_MESSAGENO
+        set OPERTYPE = ${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_UPDATE},
+            <if test="messageName!=null">
+                MESSAGE_NAME = #{messageName},
+            </if>
+            UPDATE_TIME = sysdate
+        where MESSAGE_NO = #{messageNo} and MESSAGE_TYPE = #{messageType}
+    </update>
+
+    <update id="modifyMessageNameByAccessLog" parameterType="com.aotain.common.policyapi.base.BaseVo">
+        update DPI_V1_CFG_MESSAGENO
+        set OPERTYPE = ${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_SAVE},
+        UPDATE_TIME = sysdate
+        where MESSAGE_NO = #{messageNo} and MESSAGE_TYPE = #{messageType}
+    </update>
+
+    <update id="modifyMessageNameByIpAddressAllocation" parameterType="com.aotain.common.policyapi.base.BaseVo">
+        update DPI_V1_CFG_MESSAGENO
+        set OPERTYPE = ${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_SAVE},
+            <if test="messageName!=null">
+                MESSAGE_NAME = #{messageName},
+            </if>
+            UPDATE_TIME = sysdate
+        where MESSAGE_NO = #{messageNo} and MESSAGE_TYPE = #{messageType}
+    </update>
+
+    <update id="deleteMessageName" parameterType="com.aotain.common.policyapi.base.BaseVo">
+        update DPI_V1_CFG_MESSAGENO
+        set OPERTYPE = ${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_DELETE},
+            UPDATE_TIME = sysdate
+        where MESSAGE_NO = #{messageNo} and MESSAGE_TYPE = #{messageType}
+    </update>
+
+    <select id="selectByMessageNoAndType" parameterType="com.aotain.common.policyapi.base.BaseVo" resultType="int">
+        select count(1) from DPI_V1_CFG_MESSAGENO
+        where MESSAGE_NO = #{messageNo} and MESSAGE_TYPE = #{messageType}
+        and OPERTYPE in (1,2)
+    </select>
+
+    <select id="selectAllTypeMaxMessageNo" resultType="com.aotain.common.policyapi.model.MessageName">
+        SELECT MESSAGE_TYPE AS messageType,max(MESSAGE_NO) AS messageNo
+        FROM DPI_V1_CFG_MESSAGENO
+        GROUP BY MESSAGE_TYPE
+    </select>
+
+</mapper>

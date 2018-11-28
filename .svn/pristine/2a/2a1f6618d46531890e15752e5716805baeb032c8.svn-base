@@ -1,0 +1,171 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import com.aotain.cu.annotation.Export;
+
+public class ServiceHHVirtualHostDTO extends BaseDTO implements Serializable{
+
+	private static final long serialVersionUID = 2312424747758682528L;
+	
+	@Export(title="虚拟主机ID", id=1)
+	private Long virtualId;
+	
+	@Export(title="服务下占用机房ID", id=2)
+	private Long hhId; //占用机房ID
+	
+	private Long serviceId; //服务信息ID
+	
+	private Long userId; //用户ID
+	
+	@Export(title="编号", id=3)
+	private String virtualNo; //编号
+	
+	@Export(title="主机名", id=4)
+	private String name; //主机名
+	
+	@Export(title="网络地址", id=5)
+	private String networkAddress; //网络地址
+	
+	@Export(title="状态", id=6)
+	private Integer status; //状态
+	
+	@Export(title="类型", id=7)
+	private Integer type; //类型(1-共享式、2-专用式，3-云虚拟)
+	
+	@Export(title="管理地址", id=8)
+	private String mgnAddress; //管理地址
+	
+	private Date createDate; //创建日期
+	
+	private Date updateDate; //更新日期
+	
+	private Long createUserId; //创建人ID
+	
+	private Integer operationType; //操作类型（0-完成记录、1-新增、2-修改(变更)，3-删除）
+	
+	private Integer dealFlag; //处理状态（0-未上报、1-提交上报、2-接口文件已经生成、3-文件生成失败，4-上报成功） 
+
+	public Long getVirtualId() {
+		return virtualId;
+	}
+
+	public Long getHhId() {
+		return hhId;
+	}
+
+	public Long getServiceId() {
+		return serviceId;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public String getVirtualNo() {
+		return virtualNo;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getNetworkAddress() {
+		return networkAddress;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public String getMgnAddress() {
+		return mgnAddress;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public Long getCreateUserId() {
+		return createUserId;
+	}
+
+	public Integer getOperationType() {
+		return operationType;
+	}
+
+	public Integer getDealFlag() {
+		return dealFlag;
+	}
+
+	public void setVirtualId(Long virtualId) {
+		this.virtualId = virtualId;
+	}
+
+	public void setHhId(Long hhId) {
+		this.hhId = hhId;
+	}
+
+	public void setServiceId(Long serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public void setVirtualNo(String virtualNo) {
+		this.virtualNo = virtualNo;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setNetworkAddress(String networkAddress) {
+		this.networkAddress = networkAddress;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public void setMgnAddress(String mgnAddress) {
+		this.mgnAddress = mgnAddress;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public void setCreateUserId(Long createUserId) {
+		this.createUserId = createUserId;
+	}
+
+	public void setOperationType(Integer operationType) {
+		this.operationType = operationType;
+	}
+
+	public void setDealFlag(Integer dealFlag) {
+		this.dealFlag = dealFlag;
+	}
+
+	
+}

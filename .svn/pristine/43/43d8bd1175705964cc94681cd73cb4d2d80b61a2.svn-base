@@ -1,0 +1,11 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+
+import com.aotain.cu.serviceapi.model.UserBandwidthInformation;
+
+public class UserBandwidthInformationDTO extends UserBandwidthInformation implements Serializable {
+
+	private static final long serialVersionUID = -3167326800037683494L;
+
+}

@@ -1,0 +1,187 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+
+public class ServiceHHFrameInformationDTO extends BaseDTO implements Serializable {
+	
+	private static final long serialVersionUID = 4811802823802061007L;
+
+	private Long id;
+	
+	private Long providerId;
+	
+	private Long userId;
+	
+	private String userCode;
+	
+	private Long serviceId;
+	
+	private String registerId;
+	
+	private Long houseId;
+	
+	private Long hhId;
+	
+	private String frameIds;
+	
+	private String frameNos;
+	
+	private Long frameId;
+	
+	private String unitName;
+	
+	private String houseName; 
+	
+	private String frameName;
+	
+	private String frameNo;
+	
+	private String distributeTime;
+	
+	private Long bandWidth;
+	
+	public ServiceHHFrameInformationDTO() {
+		super();
+	}
+	
+	public ServiceHHFrameInformationDTO(Integer isPaging, Integer isCount, String sortName) {
+		super(isPaging, isCount, sortName);
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getProviderId() {
+		return providerId;
+	}
+
+	public void setProviderId(Long providerId) {
+		this.providerId = providerId;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public String getUserCode() {
+		return userCode;
+	}
+
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
+
+	public Long getServiceId() {
+		return serviceId;
+	}
+
+	public void setServiceId(Long serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	public String getRegisterId() {
+		return registerId;
+	}
+
+	public void setRegisterId(String registerId) {
+		this.registerId = registerId;
+	}
+
+	public Long getHouseId() {
+		return houseId;
+	}
+
+	public void setHouseId(Long houseId) {
+		this.houseId = houseId;
+	}
+
+	public Long getHhId() {
+		return hhId;
+	}
+
+	public void setHhId(Long hhId) {
+		this.hhId = hhId;
+	}
+
+	public String getFrameIds() {
+		return frameIds;
+	}
+
+	public void setFrameIds(String frameIds) {
+		this.frameIds = frameIds;
+	}
+
+	public String getFrameNos() {
+		return frameNos;
+	}
+
+	public void setFrameNos(String frameNos) {
+		this.frameNos = frameNos;
+	}
+
+	public Long getFrameId() {
+		return frameId;
+	}
+
+	public void setFrameId(Long frameId) {
+		this.frameId = frameId;
+	}
+
+	public String getUnitName() {
+		return unitName;
+	}
+
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
+
+	public String getHouseName() {
+		return houseName;
+	}
+
+	public void setHouseName(String houseName) {
+		this.houseName = houseName;
+	}
+
+	public String getFrameName() {
+		return frameName;
+	}
+
+	public void setFrameName(String frameName) {
+		this.frameName = frameName;
+	}
+
+	public String getFrameNo() {
+		return frameNo;
+	}
+
+	public void setFrameNo(String frameNo) {
+		this.frameNo = frameNo;
+	}
+
+	public String getDistributeTime() {
+		return distributeTime;
+	}
+
+	public void setDistributeTime(String distributeTime) {
+		this.distributeTime = distributeTime;
+	}
+
+	public Long getBandWidth() {
+		return bandWidth;
+	}
+
+	public void setBandWidth(Long bandWidth) {
+		this.bandWidth = bandWidth;
+	}
+
+}

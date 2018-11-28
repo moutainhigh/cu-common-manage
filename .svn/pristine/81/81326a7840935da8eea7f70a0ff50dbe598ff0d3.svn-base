@@ -1,0 +1,236 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+
+public class VirtualHostInformationDTO extends BaseDTO implements Serializable{
+
+	private static final long serialVersionUID = -2803530045320869016L;
+
+	private Long providerId;
+	
+	private Long virtualId;
+	
+	private Long userId;
+	
+	private String userCode;
+	
+	private Long serviceId; 
+	
+	private String registerId;
+	
+	private Long hhId;
+	
+	private String houseIdStr;
+	
+	private Long houseId;
+	
+	private String houseName; 
+	
+	private String unitName; 
+	
+	private String regId;
+	
+	private Integer business; 
+	
+	private String frameNos; 
+	
+	private String virtualNo;
+	
+	private String name; 
+	
+	private Integer status; 
+	
+	private Integer type; 
+	
+	private String networkAddress;
+	
+	private String mgnAddress;
+	
+	private String distributeTime;
+	
+	private Long bandWidth;
+	
+	public VirtualHostInformationDTO() {
+		super();
+	}
+	
+	public VirtualHostInformationDTO(Integer isPaging, Integer isCount, String sortName) {
+		super(isPaging, isCount, sortName);
+	}
+
+	public Long getProviderId() {
+		return providerId;
+	}
+
+	public void setProviderId(Long providerId) {
+		this.providerId = providerId;
+	}
+
+	public Long getVirtualId() {
+		return virtualId;
+	}
+
+	public void setVirtualId(Long virtualId) {
+		this.virtualId = virtualId;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public String getUserCode() {
+		return userCode;
+	}
+
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
+
+	public Long getServiceId() {
+		return serviceId;
+	}
+
+	public void setServiceId(Long serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	public String getRegisterId() {
+		return registerId;
+	}
+
+	public void setRegisterId(String registerId) {
+		this.registerId = registerId;
+	}
+
+	public Long getHhId() {
+		return hhId;
+	}
+
+	public void setHhId(Long hhId) {
+		this.hhId = hhId;
+	}
+
+	public String getHouseIdStr() {
+		return houseIdStr;
+	}
+
+	public void setHouseIdStr(String houseIdStr) {
+		this.houseIdStr = houseIdStr;
+	}
+
+	public Long getHouseId() {
+		return houseId;
+	}
+
+	public void setHouseId(Long houseId) {
+		this.houseId = houseId;
+	}
+
+	public String getHouseName() {
+		return houseName;
+	}
+
+	public void setHouseName(String houseName) {
+		this.houseName = houseName;
+	}
+
+	public String getUnitName() {
+		return unitName;
+	}
+
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
+
+	public String getRegId() {
+		return regId;
+	}
+
+	public void setRegId(String regId) {
+		this.regId = regId;
+	}
+
+	public Integer getBusiness() {
+		return business;
+	}
+
+	public void setBusiness(Integer business) {
+		this.business = business;
+	}
+
+	public String getFrameNos() {
+		return frameNos;
+	}
+
+	public void setFrameNos(String frameNos) {
+		this.frameNos = frameNos;
+	}
+
+	public String getVirtualNo() {
+		return virtualNo;
+	}
+
+	public void setVirtualNo(String virtualNo) {
+		this.virtualNo = virtualNo;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public String getNetworkAddress() {
+		return networkAddress;
+	}
+
+	public void setNetworkAddress(String networkAddress) {
+		this.networkAddress = networkAddress;
+	}
+
+	public String getMgnAddress() {
+		return mgnAddress;
+	}
+
+	public void setMgnAddress(String mgnAddress) {
+		this.mgnAddress = mgnAddress;
+	}
+
+	public String getDistributeTime() {
+		return distributeTime;
+	}
+
+	public void setDistributeTime(String distributeTime) {
+		this.distributeTime = distributeTime;
+	}
+
+	public Long getBandWidth() {
+		return bandWidth;
+	}
+
+	public void setBandWidth(Long bandWidth) {
+		this.bandWidth = bandWidth;
+	}
+}

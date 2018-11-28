@@ -1,0 +1,50 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+
+import com.aotain.cu.serviceapi.model.UserVirtualInformation;
+
+public class UserVirtualInformationDTO extends UserVirtualInformation implements Serializable {
+
+	private static final long serialVersionUID = -2065058425270198324L;
+
+	private String unitName;
+
+	private String houseName;
+
+	private String startDate;//查询开始时间
+
+	private String endDate;//查询结束时间
+
+	public String getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getUnitName() {
+		return unitName;
+	}
+
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
+
+	public String getHouseName() {
+		return houseName;
+	}
+
+	public void setHouseName(String houseName) {
+		this.houseName = houseName;
+	}
+}

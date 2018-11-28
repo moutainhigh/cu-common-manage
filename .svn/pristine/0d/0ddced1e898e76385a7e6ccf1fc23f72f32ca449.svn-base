@@ -1,0 +1,31 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+
+import com.aotain.cu.annotation.ExpSheet;
+import com.aotain.cu.annotation.Export;
+import com.aotain.cu.serviceapi.model.UserServiceInformation;
+
+@ExpSheet(name="用户服务信息")
+public class UserServiceInformationDTO extends UserServiceInformation implements Serializable {
+
+	private static final long serialVersionUID = -1340024456694142454L;
+
+	@Export(title="单位名称（用户）", id=2)
+	private String unitName; //单位名称
+
+	private String domainName;//服务域名
+
+	private String startDate;
+
+	private String endDate;
+
+	public String getUnitName() {
+		return unitName;
+	}
+
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
+	
+}

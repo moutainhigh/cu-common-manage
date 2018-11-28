@@ -1,0 +1,240 @@
+package com.aotain.cu.serviceapi.model;
+
+import java.util.Date;
+
+
+public class ServiceHouseOccupancyIPTransInfor {
+	
+	private Long ipTransforId;
+	
+	private Long hhId;
+	
+	private Long serviceId;
+	
+	private Long userId;
+	
+	private String internetStartIP;
+	
+	private String internetEndIP;
+	
+	private String netStartIP;
+	
+	private String netEndIP;
+	
+	private Date creationDate;
+	
+	private Date updateDate;
+	
+	private Long createUserId;
+	
+	private Long selIpTrans;
+	
+	private String decimalInternetStartIP; //互联网起始IP地址对应的十进制
+	
+	private String decimalInternetEndIP; //互联网终止IP地址对应的十进制
+	
+	private String decimalNetStartIP; //私网起始IP地址对应的十进制
+	
+	private String decimalNetEndIP; //私网终止IP地址对应的十进制
+	
+	private Integer operationType; //操作类型（0-完成记录、1-新增、2-修改(变更)，3-删除）
+	
+	private Integer dealFlag; //处理状态（0-未上报、1-提交上报、2-接口文件已经生成、3-文件生成失败，4-上报成功） 
+
+	private String regId;
+	
+	private String houseName;
+	
+	private Long seliptrans; 
+	
+	private String unitName; 
+	
+	private String areaCode;//地市码信息字段
+	
+	
+	
+	public String getAreaCode() {
+		return areaCode;
+	}
+
+	public void setAreaCode(String areaCode) {
+		this.areaCode = areaCode;
+	}
+
+	public String getRegId() {
+		return regId;
+	}
+
+	public void setRegId(String regId) {
+		this.regId = regId;
+	}
+
+	public String getHouseName() {
+		return houseName;
+	}
+
+	public void setHouseName(String houseName) {
+		this.houseName = houseName;
+	}
+
+	public Long getIpTransforId() {
+		return ipTransforId;
+	}
+
+	public Long getHhId() {
+		return hhId;
+	}
+
+	public Long getServiceId() {
+		return serviceId;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public String getInternetStartIP() {
+		return internetStartIP;
+	}
+
+	public String getInternetEndIP() {
+		return internetEndIP;
+	}
+
+	public String getNetStartIP() {
+		return netStartIP;
+	}
+
+	public String getNetEndIP() {
+		return netEndIP;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public Long getCreateUserId() {
+		return createUserId;
+	}
+
+	public Long getSelIpTrans() {
+		return selIpTrans;
+	}
+
+	public String getDecimalInternetStartIP() {
+		return decimalInternetStartIP;
+	}
+
+	public String getDecimalInternetEndIP() {
+		return decimalInternetEndIP;
+	}
+
+	public String getDecimalNetStartIP() {
+		return decimalNetStartIP;
+	}
+
+	public String getDecimalNetEndIP() {
+		return decimalNetEndIP;
+	}
+
+	public Integer getOperationType() {
+		return operationType;
+	}
+
+	public Integer getDealFlag() {
+		return dealFlag;
+	}
+
+	public void setIpTransforId(Long ipTransforId) {
+		this.ipTransforId = ipTransforId;
+	}
+
+	public void setHhId(Long hhId) {
+		this.hhId = hhId;
+	}
+
+	public void setServiceId(Long serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public void setInternetStartIP(String internetStartIP) {
+		this.internetStartIP = internetStartIP;
+	}
+
+	public void setInternetEndIP(String internetEndIP) {
+		this.internetEndIP = internetEndIP;
+	}
+
+	public void setNetStartIP(String netStartIP) {
+		this.netStartIP = netStartIP;
+	}
+
+	public void setNetEndIP(String netEndIP) {
+		this.netEndIP = netEndIP;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public void setCreateUserId(Long createUserId) {
+		this.createUserId = createUserId;
+	}
+
+	public void setSelIpTrans(Long selIpTrans) {
+		this.selIpTrans = selIpTrans;
+	}
+
+	public void setDecimalInternetStartIP(String decimalInternetStartIP) {
+		this.decimalInternetStartIP = decimalInternetStartIP;
+	}
+
+	public void setDecimalInternetEndIP(String decimalInternetEndIP) {
+		this.decimalInternetEndIP = decimalInternetEndIP;
+	}
+
+	public void setDecimalNetStartIP(String decimalNetStartIP) {
+		this.decimalNetStartIP = decimalNetStartIP;
+	}
+
+	public void setDecimalNetEndIP(String decimalNetEndIP) {
+		this.decimalNetEndIP = decimalNetEndIP;
+	}
+
+	public void setOperationType(Integer operationType) {
+		this.operationType = operationType;
+	}
+
+	public void setDealFlag(Integer dealFlag) {
+		this.dealFlag = dealFlag;
+	}
+
+	public Long getSeliptrans() {
+		return seliptrans;
+	}
+
+	public void setSeliptrans(Long seliptrans) {
+		this.seliptrans = seliptrans;
+	}
+
+	public String getUnitName() {
+		return unitName;
+	}
+
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
+
+}

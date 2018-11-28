@@ -1,0 +1,119 @@
+package com.aotain.cu.serviceapi.model;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
+
+import com.aotain.cu.annotation.Export;
+
+public class HouseFrameInformation extends BaseModel implements Serializable {
+
+	private static final long serialVersionUID = -6626339184959559811L;
+
+	private Long houseSeqId;
+
+	private Long frameId;
+	
+	private Long houseId; //机房ID
+	
+	private String frameNo; //机架/机位编码
+	
+	@Export(title="机架名称", id=2)
+	private String frameName; //机架名称
+	
+	private Integer useType; //使用类型(1-自用，2-租用)
+	
+	private Integer distribution; //分配状态(1-未分配  、2-已分配)
+	
+	private Integer occupancy; //占用状态(1-未占用 、2-已占用)
+	
+	@Export(title="所属客户", id=6)
+	private List<HouseUserFrameInformation> userFrameList;
+
+	public Long getFrameId() {
+		return frameId;
+	}
+
+	public Long getHouseId() {
+		return houseId;
+	}
+
+	public String getFrameNo() {
+		return frameNo;
+	}
+
+	public String getFrameName() {
+		return frameName;
+	}
+
+	public Integer getUseType() {
+		return useType;
+	}
+
+	public Integer getDistribution() {
+		return distribution;
+	}
+
+	public Integer getOccupancy() {
+		return occupancy;
+	}
+
+	public List<HouseUserFrameInformation> getUserFrameList() {
+		return userFrameList;
+	}
+
+	public void setFrameId(Long frameId) {
+		this.frameId = frameId;
+	}
+
+	public void setHouseId(Long houseId) {
+		this.houseId = houseId;
+	}
+
+	public void setFrameNo(String frameNo) {
+		this.frameNo = frameNo;
+	}
+
+	public void setFrameName(String frameName) {
+		this.frameName = frameName;
+	}
+
+	public void setUseType(Integer useType) {
+		this.useType = useType;
+	}
+
+	public void setDistribution(Integer distribution) {
+		this.distribution = distribution;
+	}
+
+	public void setOccupancy(Integer occupancy) {
+		this.occupancy = occupancy;
+	}
+
+	public void setUserFrameList(List<HouseUserFrameInformation> userFrameList) {
+		this.userFrameList = userFrameList;
+	}
+
+	public Long getHouseSeqId() {
+		return houseSeqId;
+	}
+
+	public void setHouseSeqId(Long houseSeqId) {
+		this.houseSeqId = houseSeqId;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		HouseFrameInformation that = (HouseFrameInformation) o;
+		return Objects.equals(frameId, that.frameId) &&
+				Objects.equals(houseId, that.houseId) &&
+				Objects.equals(frameNo, that.frameNo);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(frameId, houseId, frameNo);
+	}
+}

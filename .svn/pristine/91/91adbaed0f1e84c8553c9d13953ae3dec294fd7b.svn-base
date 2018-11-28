@@ -1,0 +1,191 @@
+package com.aotain.cu.serviceapi.model;
+
+import java.util.Date;
+
+
+public class ServiceHouseOccupancyInformation {
+	
+	private Long hhId;
+	
+	private Long houseId;
+	
+	private Long userId; 
+	
+	private String unitName;
+	
+	private Long serviceId;
+	
+	private String frameIds; //占用机架ID(多个机架用英文逗号隔开）
+	
+	private String distributeTime;
+	
+	private Long bandWidth;
+	
+	private Integer operationType;
+	
+	private Integer dealFlag;
+	
+	private Date creationDate;
+	
+	private Date updateDate;
+	
+	private Long createUserId; //创建人ID
+	
+	private String infoComplete; //信息是否完整
+	
+	private Integer business; //业务节点类型（辅助字段）
+
+	
+	private String houseName;
+	
+	private String regId;
+	
+	private String areaCode;//地市码字段信息
+	
+	public String getRegId() {
+		return regId;
+	}
+
+	public void setRegId(String regId) {
+		this.regId = regId;
+	}
+
+	public String getHouseName() {
+		return houseName;
+	}
+
+	public void setHouseName(String houseName) {
+		this.houseName = houseName;
+	}
+
+	public Long getHhId() {
+		return hhId;
+	}
+
+	public Long getHouseId() {
+		return houseId;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public String getUnitName() {
+		return unitName;
+	}
+
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
+
+	public Long getServiceId() {
+		return serviceId;
+	}
+
+	public String getFrameIds() {
+		return frameIds;
+	}
+
+	public String getDistributeTime() {
+		return distributeTime;
+	}
+
+	public Long getBandWidth() {
+		return bandWidth;
+	}
+
+	public Integer getOperationType() {
+		return operationType;
+	}
+
+	public Integer getDealFlag() {
+		return dealFlag;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public Long getCreateUserId() {
+		return createUserId;
+	}
+
+	public String getInfoComplete() {
+		return infoComplete;
+	}
+
+	public Integer getBusiness() {
+		return business;
+	}
+
+	public void setHhId(Long hhId) {
+		this.hhId = hhId;
+	}
+
+	public void setHouseId(Long houseId) {
+		this.houseId = houseId;
+	}
+	
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public void setServiceId(Long serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	public void setFrameIds(String frameIds) {
+		this.frameIds = frameIds;
+	}
+
+	public void setDistributeTime(String distributeTime) {
+		this.distributeTime = distributeTime;
+	}
+
+	public void setBandWidth(Long bandWidth) {
+		this.bandWidth = bandWidth;
+	}
+
+	public void setOperationType(Integer operationType) {
+		this.operationType = operationType;
+	}
+
+	public void setDealFlag(Integer dealFlag) {
+		this.dealFlag = dealFlag;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public void setCreateUserId(Long createUserId) {
+		this.createUserId = createUserId;
+	}
+
+	public void setInfoComplete(String infoComplete) {
+		this.infoComplete = infoComplete;
+	}
+
+	public void setBusiness(Integer business) {
+		this.business = business;
+	}
+
+	public String getAreaCode() {
+		return areaCode;
+	}
+
+	public void setAreaCode(String areaCode) {
+		this.areaCode = areaCode;
+	}
+
+	
+	
+}

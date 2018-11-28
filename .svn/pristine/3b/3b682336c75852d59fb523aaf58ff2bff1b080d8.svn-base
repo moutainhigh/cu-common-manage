@@ -1,0 +1,39 @@
+package com.aotain.common.utils.redis;
+
+import com.aotain.common.config.ContextUtil;
+import com.aotain.common.config.redis.BaseRedisService;
+
+public class DataSubmitUtil {
+    
+    /**
+     * redis实例
+     */
+    @SuppressWarnings("unchecked")
+    private static BaseRedisService<String, String, Long> rediscluster = ContextUtil.getContext().getBean("baseRedisServiceImpl",BaseRedisService.class);
+
+    private static String DATA_SUBMIT_CACHE = "data_submit_cache";
+    
+    /**
+     * 单例
+     */
+    private static DataSubmitUtil instance = null;
+    
+    /**
+     * 获得单例
+     */
+    public synchronized static DataSubmitUtil getInstance(){
+        if(instance == null){
+            instance = new DataSubmitUtil();
+        }
+        
+        return instance;
+    }
+    
+    public void setDataSubmit(String field,Long submitId) {
+ 		rediscluster.putHash(DATA_SUBMIT_CACHE,field,submitId);
+ 	}
+
+ 	public Long getDataSubmit(String field) {
+ 		return rediscluster.getHash(DATA_SUBMIT_CACHE, field);
+ 	}
+}

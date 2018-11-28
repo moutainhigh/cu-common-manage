@@ -1,0 +1,40 @@
+package com.aotain.common.utils.redis;
+
+import com.aotain.common.config.ContextUtil;
+import com.aotain.common.config.redis.BaseRedisService;
+
+public class DataApproveUtil {
+    
+    /**
+     * redis实例
+     */
+    @SuppressWarnings("unchecked")
+    private static BaseRedisService<String, String, Long> rediscluster = ContextUtil.getContext().getBean("baseRedisServiceImpl",BaseRedisService.class);
+
+    private static String DATA_APPROVE_CACHE = "data_approve_cache";
+    
+    /**
+     * 单例
+     */
+    private static DataApproveUtil instance = null;
+    
+    /**
+     * 获得单例
+     */
+    public synchronized static DataApproveUtil getInstance(){
+        if(instance == null){
+            instance = new DataApproveUtil();
+        }
+        
+        return instance;
+    }
+    
+    public void setDataApprove(String field,Long approveId) {
+		rediscluster.putHash(DATA_APPROVE_CACHE,field,approveId);
+	}
+
+	public Long getDataApprove(String field) {
+		return rediscluster.getHash(DATA_APPROVE_CACHE, field);
+	}
+	
+}

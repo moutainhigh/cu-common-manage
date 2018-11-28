@@ -1,0 +1,266 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+
+public class ServiceIpInformationDTO extends BaseDTO implements Serializable {
+
+	private static final long serialVersionUID = -3516958239601176601L; 
+	
+	private Long providerId;
+	
+	private Long userId;
+	
+	private String userCode;
+	
+	private Long serviceId;
+	
+	private String registerId; 
+	
+	private String houseIdStr;
+	
+	private Long houseId;
+	
+	private Long hhId;
+	
+	private Long iptransId;
+	
+	private String unitName;
+	
+	private String regId; 
+	
+	private Integer business; 
+	
+	private String houseName; 
+	
+	private String frameNos;
+	
+	private String distributeTime;
+	
+	private Long bandWidth;
+	
+	private Long selIpTrans;
+	
+	private String internetStartIP; 
+	
+	private String decimalInternetStartIP;
+	
+	private String internetEndIP; 
+	
+	private String decimalInternetEndIP;
+	
+	private String netStartIP; 
+	
+	private String decimalNetStartIP;
+	
+	private String netEndIP;
+	
+	private String decimalNetEndIP;
+	
+	public ServiceIpInformationDTO() {
+		super();
+	}
+	
+	public ServiceIpInformationDTO(Integer isPaging, Integer isCount, String sortName) {
+		super(isPaging, isCount, sortName);
+	}
+
+	public Long getProviderId() {
+		return providerId;
+	}
+
+	public void setProviderId(Long providerId) {
+		this.providerId = providerId;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public String getUserCode() {
+		return userCode;
+	}
+
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
+
+	public Long getServiceId() {
+		return serviceId;
+	}
+
+	public void setServiceId(Long serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	public String getRegisterId() {
+		return registerId;
+	}
+
+	public void setRegisterId(String registerId) {
+		this.registerId = registerId;
+	}
+
+	public String getHouseIdStr() {
+		return houseIdStr;
+	}
+
+	public void setHouseIdStr(String houseIdStr) {
+		this.houseIdStr = houseIdStr;
+	}
+
+	public Long getHouseId() {
+		return houseId;
+	}
+
+	public void setHouseId(Long houseId) {
+		this.houseId = houseId;
+	}
+
+	public Long getHhId() {
+		return hhId;
+	}
+
+	public void setHhId(Long hhId) {
+		this.hhId = hhId;
+	}
+
+	public Long getIptransId() {
+		return iptransId;
+	}
+
+	public void setIptransId(Long iptransId) {
+		this.iptransId = iptransId;
+	}
+
+	public String getUnitName() {
+		return unitName;
+	}
+
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
+
+	public String getRegId() {
+		return regId;
+	}
+
+	public void setRegId(String regId) {
+		this.regId = regId;
+	}
+
+	public Integer getBusiness() {
+		return business;
+	}
+
+	public void setBusiness(Integer business) {
+		this.business = business;
+	}
+
+	public String getHouseName() {
+		return houseName;
+	}
+
+	public void setHouseName(String houseName) {
+		this.houseName = houseName;
+	}
+
+	public String getFrameNos() {
+		return frameNos;
+	}
+
+	public void setFrameNos(String frameNos) {
+		this.frameNos = frameNos;
+	}
+
+	public String getDistributeTime() {
+		return distributeTime;
+	}
+
+	public void setDistributeTime(String distributeTime) {
+		this.distributeTime = distributeTime;
+	}
+
+	public Long getBandWidth() {
+		return bandWidth;
+	}
+
+	public void setBandWidth(Long bandWidth) {
+		this.bandWidth = bandWidth;
+	}
+
+	public Long getSelIpTrans() {
+		return selIpTrans;
+	}
+
+	public void setSelIpTrans(Long selIpTrans) {
+		this.selIpTrans = selIpTrans;
+	}
+
+	public String getInternetStartIP() {
+		return internetStartIP;
+	}
+
+	public void setInternetStartIP(String internetStartIP) {
+		this.internetStartIP = internetStartIP;
+	}
+
+	public String getDecimalInternetStartIP() {
+		return decimalInternetStartIP;
+	}
+
+	public void setDecimalInternetStartIP(String decimalInternetStartIP) {
+		this.decimalInternetStartIP = decimalInternetStartIP;
+	}
+
+	public String getInternetEndIP() {
+		return internetEndIP;
+	}
+
+	public void setInternetEndIP(String internetEndIP) {
+		this.internetEndIP = internetEndIP;
+	}
+
+	public String getDecimalInternetEndIP() {
+		return decimalInternetEndIP;
+	}
+
+	public void setDecimalInternetEndIP(String decimalInternetEndIP) {
+		this.decimalInternetEndIP = decimalInternetEndIP;
+	}
+
+	public String getNetStartIP() {
+		return netStartIP;
+	}
+
+	public void setNetStartIP(String netStartIP) {
+		this.netStartIP = netStartIP;
+	}
+
+	public String getDecimalNetStartIP() {
+		return decimalNetStartIP;
+	}
+
+	public void setDecimalNetStartIP(String decimalNetStartIP) {
+		this.decimalNetStartIP = decimalNetStartIP;
+	}
+
+	public String getNetEndIP() {
+		return netEndIP;
+	}
+
+	public void setNetEndIP(String netEndIP) {
+		this.netEndIP = netEndIP;
+	}
+
+	public String getDecimalNetEndIP() {
+		return decimalNetEndIP;
+	}
+
+	public void setDecimalNetEndIP(String decimalNetEndIP) {
+		this.decimalNetEndIP = decimalNetEndIP;
+	}
+}

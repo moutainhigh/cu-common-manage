@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aotain.common.policyapi.mapper.HouseIpMapper">
+
+	<resultMap id="houseIpMap" type="com.aotain.common.policyapi.model.HouseIp">
+		<result column="HOUSE_ID" property="houseId" />
+		<result column="MESSAGE_NO" property="messageNo"/>
+		<result column="OPERATETYPE" property="operationType"/>
+		<result column="MESSAGE_SEQUENCENO" property="messageSequenceNo"/>
+		<result column="CREATE_TIME" property="createTime"/>
+	</resultMap>
+
+	<sql id="houseIpIpBaseColumn">
+		SEQ_ID AS seqId,
+		HOUSE_ID AS	houseId,
+		USERIP AS houseIp,
+		USERIP_PREFIX AS houseIpPrefix,
+		MESSAGE_SEQUENCENO AS messageSequenceNo,
+		CREATE_TIME AS	createTime
+	</sql>
+	
+	<select id="findHouseIpIpCount" resultType="java.lang.Integer" parameterType="com.aotain.common.policyapi.model.HouseIpIp">
+		select count(1) from idc_isms_cfg_houseip_ip 
+		where USERIP=#{houseIp} and USERIP_PREFIX=#{houseIpPrefix}
+		and OPERATETYPE != ${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_DELETE}
+	  </select>
+  
+	<insert id="insertData" parameterType="com.aotain.common.policyapi.model.HouseIp">
+		insert into idc_isms_cfg_houseip(HOUSE_ID, MESSAGE_NO, OPERATETYPE, MESSAGE_SEQUENCENO, CREATE_TIME)
+    	values (#{houseId,jdbcType=VARCHAR},
+    			#{messageNo,jdbcType=DECIMAL},
+    			${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_SAVE},
+    			#{messageSequenceNo,jdbcType=DECIMAL},
+    			sysdate)
+	</insert>
+	
+	<insert id="insertHouseIpIp" parameterType="com.aotain.common.policyapi.model.HouseIpIp">
+		<selectKey keyProperty="seqId" resultType="java.lang.Long" order="BEFORE">
+			select SEQ_IDC_ISMS_CFG_HOUSE_IP_ID.nextval from dual 
+		</selectKey>
+		insert into idc_isms_cfg_houseip_ip(SEQ_ID, HOUSE_ID, USERIP, USERIP_PREFIX, OPERATETYPE, MESSAGE_SEQUENCENO, CREATE_TIME)
+      	values (#{seqId,jdbcType=DECIMAL},
+			  #{houseId,jdbcType=VARCHAR},
+			  #{houseIp,jdbcType=VARCHAR},
+			  #{houseIpPrefix,jdbcType=INTEGER},
+			  ${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_SAVE},
+			  #{messageSequenceNo,jdbcType=DECIMAL},
+			  sysdate)
+	</insert>
+	
+	<update id="updateData" parameterType="com.aotain.common.policyapi.model.HouseIp">
+		update idc_isms_cfg_houseip
+		set
+		MESSAGE_SEQUENCENO = #{messageSequenceNo},
+		OPERATETYPE = ${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_UPDATE},
+		CREATE_TIME = sysdate
+    	where HOUSE_ID = #{houseId}
+	</update>
+
+	<delete id="deleteHouseIpIp" parameterType="com.aotain.common.policyapi.model.HouseIpIp">
+    	update idc_isms_cfg_houseip_ip
+       	set
+       	OPERATETYPE = ${@com.aotain.common.policyapi.constant.OperationConstants@OPERATION_DELETE},
+       	MESSAGE_SEQUENCENO = #{messageSequenceNo},
+       	CREATE_TIME = sysdate
+     	where SEQ_ID = #{seqId}
+	</delete>
+
+	<select id="selectByHouseId" parameterType="string" resultType="com.aotain.common.policyapi.model.HouseIp">
+		select HOUSE_ID AS houseId,MESSAGE_NO AS messageNo,OPERATETYPE AS operationType,
+		MESSAGE_SEQUENCENO AS messageSequenceNo,CREATE_TIME AS createTime
+		FROM idc_isms_cfg_houseip
+		where HOUSE_ID = #{houseId}
+		and OPERATETYPE in (1,2)
+	</select>
+
+	<select id="selectHouseIpIpBySeqId" parameterType="long" resultType="com.aotain.common.policyapi.model.HouseIpIp">
+		select
+		<include refid="houseIpIpBaseColumn"/>
+		from idc_isms_cfg_houseip_ip
+		WHERE SEQ_ID = #{seqId}
+	</select>
+
+	<!--初始化redis信息时使用 不排除删除数据 -->
+	<select id="selectHouseIpIpByHouseId" parameterType="string"  resultType="com.aotain.common.policyapi.model.HouseIpIp">
+		select
+		<include refid="houseIpIpBaseColumn"/>
+		from idc_isms_cfg_houseip_ip
+		WHERE HOUSE_ID = #{houseId}
+		and OPERATETYPE in (1,2)
+	</select>
+
+	<!--初始化redis信息时使用 不排除删除数据 -->
+	<select id="selectAllHouseIp" resultMap="houseIpMap">
+		select *
+		from idc_isms_cfg_houseip
+
+	</select>
+</mapper>

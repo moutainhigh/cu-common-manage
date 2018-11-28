@@ -1,0 +1,1092 @@
+package com.aotain.common.policyapi.base;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.aotain.common.policyapi.constant.*;
+import com.aotain.common.policyapi.mapper.HousePolicyBindMapper;
+import com.aotain.common.policyapi.model.*;
+import com.aotain.common.utils.model.msg.StrategySendChannel;
+
+import com.aotain.common.utils.monitorstatistics.ExceptionCollector;
+import com.aotain.common.utils.monitorstatistics.ModuleConstant;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.aotain.common.config.LocalConfig;
+import com.aotain.common.config.redis.BaseRedisService;
+import com.aotain.common.utils.model.msg.RedisTaskStatus;
+import com.aotain.common.utils.redis.MessageNoUtil;
+import com.aotain.common.utils.redis.PolicyAckUtil;
+import com.aotain.common.utils.redis.SequenceNoUtil;
+import com.aotain.common.utils.redis.TaskIdUtil;
+import com.aotain.common.utils.redis.TaskMessageUtil;
+
+import org.springframework.stereotype.Service;
+
+/**
+ * 业务层基类
+ * @author Administrator
+ *
+ */
+@Service
+public abstract class BaseService {
+
+    /**
+     * 写日志
+     */
+    private static Logger logger = Logger.getLogger(BaseService.class);
+        
+    /**
+     * 策略存在redis中的key
+     */
+    private static String REDIS_POLICY_HASH_KEY = "Strategy_%d_%d";
+
+    private static String REDIS_POLICY_STRATEGY_HASH_KEY = "StrategySorted_%d_%d";
+
+    private static String REDIS_POLICY_SERVERSTATUS_KEY = "ServerStatus_%d_193";
+    
+    /**
+     * 策略发布channel
+     */
+    private static String REDIS_POLICY_CHANNEL = "StrategySendChannel";
+
+    @Autowired
+    private BaseRedisService<String, String, String> rediscluster;
+
+    @Autowired
+    private HousePolicyBindMapper housePolicyBindMapper;
+
+    @Autowired
+    private ExceptionCollector exceptionCollector;
+    
+	public BaseMapper mapper;
+
+	public BaseMapper getMapper() {
+		return this.mapper;
+	}
+
+	public int insertData(Object obj) {
+		return getMapper().insertData(obj);
+	}
+
+	public int updateData(Object obj) {
+		return getMapper().updateData(obj);
+	}
+
+	public int deleteData(Object obj) {
+		return getMapper().deleteData(obj);
+	}
+
+    /**
+     * 新增自定义逻辑
+     * @param policy
+     * @return
+     */
+    public boolean addCustomLogic(BaseVo policy) {
+	    return false;
+    }
+
+	/**
+     * 添加多个策略
+     * @return
+     */
+    public boolean addPolicy(List<? extends BaseVo> policyList){
+        boolean result = true;
+        for(BaseVo policy : policyList){
+            result = addPolicy(policy);
+            
+            if(!result){
+                break;
+            }
+        }
+        
+        return result;
+    }
+	  
+    /**
+     * 添加策略
+     * @return
+     */
+    public boolean addPolicy(BaseVo policy){
+        try{
+            setPropertiesBeforeSaveOrUpdate(policy);
+            // 插入操作之前执行一些初始化赋值
+            beforeInsertPolicy(policy);
+            
+            boolean result = false;
+            
+            //策略写入数据库
+            result = addDb(policy);
+            if(!result){
+                logger.error("policy add database error! msg=" + policy.objectToJson());
+                return false;
+            }
+            
+            //策略存入redis中
+            result = setRedisPolicyHash(policy);
+            if(!result){
+                logger.error("policy add redis hash error! msg=" + policy.objectToJson());
+                return false;
+            }
+
+            result = addCustomLogic(policy);
+            if(!result){
+                logger.error("add custom logic error! msg=" + policy.objectToJson());
+                return false;
+            }
+            
+            return true;
+        }catch(Exception e){
+            logger.error("add policy error! msg=" + policy.objectToJson(), e);
+            exceptionCollector.addEvent(e);
+            return false;
+        }
+    }
+
+    /**
+     * 添加数据库
+     * @param policy
+     * @return
+     */
+    protected abstract boolean addDb(BaseVo policy);
+
+    /**
+     * 策略更新到redis策略hash
+     * @param policy
+     * @return
+     */
+    protected boolean setRedisPolicyHash(BaseVo policy){
+        try{
+            String key = String.format(REDIS_POLICY_HASH_KEY, policy.getProbeType(), policy.getMessageType());
+            if ( policy instanceof DpiV1CfgDpiinfo ) {
+                DpiV1CfgDpiinfo dpiV1CfgDpiinfo = (DpiV1CfgDpiinfo)policy;
+                // 记下修改前的状态
+                int tmpOpType = dpiV1CfgDpiinfo.getOperationType();
+                //port端口可选，为空时不保存
+                if (dpiV1CfgDpiinfo.getPort()!=null&&dpiV1CfgDpiinfo.getPort()!=0) {
+                    dpiV1CfgDpiinfo.setSerialPort(dpiV1CfgDpiinfo.getPort());
+                    dpiV1CfgDpiinfo.setProbeType(DevFlag.DPI.getValue());
+                    String field1 = dpiV1CfgDpiinfo.getIp()+"|"+dpiV1CfgDpiinfo.getPort();
+                    rediscluster.putHash(key, field1, policy.objectToJson());
+                }else if(dpiV1CfgDpiinfo.getOperationType() == 2){
+                	dpiV1CfgDpiinfo.setOperationType(3);
+                	 dpiV1CfgDpiinfo.setSerialPort(50000L);
+                     dpiV1CfgDpiinfo.setProbeType(DevFlag.DPI.getValue());
+                	String field1 = dpiV1CfgDpiinfo.getIp()+"|50000";
+                	rediscluster.putHash(key, field1, policy.objectToJson());
+                }
+
+                String field2 = dpiV1CfgDpiinfo.getIp()+"|"+dpiV1CfgDpiinfo.getIdcPort();
+                dpiV1CfgDpiinfo.setSerialPort(dpiV1CfgDpiinfo.getIdcPort());
+                dpiV1CfgDpiinfo.setProbeType(DevFlag.IDC.getValue());
+                dpiV1CfgDpiinfo.setOperationType(tmpOpType);
+                rediscluster.putHash(key, field2, policy.objectToJson());
+
+            } else if(policy instanceof HouseIp) {
+                HouseIp houseIp = (HouseIp) policy;
+                String jsonValue = rediscluster.getHash(key,houseIp.getMessageNo()+"");
+                if ( jsonValue==null ){
+                    rediscluster.putHash(key, policy.getMessageNo().toString(), policy.objectToJson());
+                    return true;
+                }
+                HouseIp oldHouseIp = HouseIp.parseFrom(jsonValue,HouseIp.class);
+                List<HouseIpIp> houseIpIps = oldHouseIp.getIPSegments();
+                List<HouseIpIp> deleteHouseIpIps = houseIp.getIPSegments();
+                if (policy.getOperationType()==OperationConstants.OPERATION_DELETE){
+                    houseIpIps.removeAll(deleteHouseIpIps);
+                } else {
+                    houseIpIps.removeAll(deleteHouseIpIps);
+                    houseIpIps.addAll(deleteHouseIpIps);
+                }
+                // 更新redis中保存的信息
+                oldHouseIp.setMessageSequenceNo(houseIp.getMessageSequenceNo());
+                oldHouseIp.setIPSegments(houseIpIps);
+                oldHouseIp.setBindAction(BindAction.BIND.getValue());
+                rediscluster.putHash(key, policy.getMessageNo().toString(), oldHouseIp.objectToJson());
+
+            } else if(policy instanceof HousePolicyBind) {
+                HousePolicyBind housePolicyBind = (HousePolicyBind) policy;
+                String jsonValue = rediscluster.getHash(key,housePolicyBind.getMessageNo()+"");
+                if ( jsonValue==null ){
+                    rediscluster.putHash(key, policy.getMessageNo().toString(), policy.objectToJson());
+                    return true;
+                }
+                HousePolicyBind oldHousePolicyBind = HouseIp.parseFrom(jsonValue,HousePolicyBind.class);
+                List<BindMessage> bindMessages = housePolicyBind.getBindInfo();
+                List<BindMessage> oldBindMessages = oldHousePolicyBind.getBindInfo();
+                if (policy.getOperationType()==OperationConstants.OPERATION_DELETE){
+                    oldBindMessages.removeAll(bindMessages);
+                } else {
+                    oldBindMessages.removeAll(bindMessages);
+                    oldBindMessages.addAll(bindMessages);
+                }
+                // 更新redis中保存的信息
+                oldHousePolicyBind.setMessageSequenceNo(housePolicyBind.getMessageSequenceNo());
+                oldHousePolicyBind.setBindInfo(oldBindMessages);
+                rediscluster.putHash(key, policy.getMessageNo().toString(), oldHousePolicyBind.objectToJson());
+
+            } else {
+                rediscluster.putHash(key, policy.getMessageNo().toString(), policy.objectToJson());
+
+            }
+
+            return true;
+        }catch(Exception e){
+            logger.error("policy put to redis hash error! msg=" + policy.objectToJson(), e);
+            exceptionCollector.addEvent(e);
+            return false;
+        }
+    }
+
+    /**
+     * 将策略操作顺序写入redis
+     * @param policy
+     * @return
+     */
+    protected boolean setPolicyOperateSequenceToRedis(BaseVo policy){
+        try{
+            String key = String.format(REDIS_POLICY_STRATEGY_HASH_KEY, policy.getProbeType(), policy.getMessageType());
+
+            rediscluster.addZSet(key,policy.getMessageNo().toString(),policy.getMessageSequenceNo());
+
+            return true;
+        }catch(Exception e){
+            logger.error("set policy operate sequence to  redis  error! msg=" + policy.objectToJson(), e);
+            exceptionCollector.addEvent(e);
+            return false;
+        }
+    }
+
+    /**
+     * 添加策略到redis任务hash中
+     * @param policy
+     * @return
+     */
+    protected boolean setPolicyToRedisTask(BaseVo policy){
+        if ( policy.getTopTaskId()==null || policy.getTopTaskId()==0){
+            return setPolicyToRedisTask(0L,policy.objectToJson());
+        }
+        return setPolicyToRedisTask(policy.getTopTaskId(),policy.objectToJson());
+    }
+
+    /**
+     * 添加策略到redis任务hash中
+     * @param policyJson
+     * @return
+     */
+    protected boolean setPolicyToRedisTask(String policyJson){
+
+        return setPolicyToRedisTask(0L,policyJson);
+    }
+
+    /**
+     * 添加策略到redis任务hash中
+     * @param topTaskId
+     * @param policyJson
+     * @return
+     */
+    protected boolean setPolicyToRedisTask(long topTaskId, String policyJson){
+
+        long taskId = TaskIdUtil.getInstance().getTaskId();
+        return setPolicyToRedisTask(taskId, topTaskId, policyJson);
+    }
+
+    /**
+     * 添加策略到redis任务hash中
+     * @param taskId
+     * @param topTaskId
+     * @param policyJson
+     * @return
+     */
+    protected boolean setPolicyToRedisTask(long taskId, long topTaskId, String policyJson){
+        try{
+            RedisTaskStatus taskStatus = new RedisTaskStatus();
+            
+            //获得重试参数   最大处理次数,过期时间,处理间隔
+            String commandStrs = LocalConfig.getInstance().getHashValueByHashKey("policy_eu");            
+            String[] params = commandStrs.split(",");
+            int maxTimes = Integer.parseInt(params[0]);
+            long expireTime = Long.parseLong(params[1]);
+            int interval = Integer.parseInt(params[2]);
+                        
+            taskStatus.setTasktype(4);        
+            taskStatus.setContent(policyJson);
+            taskStatus.setStatus(1);
+            taskStatus.setMaxtimes(maxTimes);
+            taskStatus.setTimes(1);
+            taskStatus.setExpiretime(expireTime);
+            taskStatus.setInterval(interval);
+            taskStatus.setNexttime(System.currentTimeMillis()/1000 + interval);
+            taskStatus.setTaskid(taskId);
+            taskStatus.setCreatetime(System.currentTimeMillis()/1000);
+
+            taskStatus.setToptaskid(topTaskId);
+
+
+            TaskMessageUtil.getInstance().setTask(taskStatus.getTaskid(), taskStatus);
+            logger.info("===========taskId========"+taskStatus.getTaskid());
+            
+            return true;
+        }catch(Exception e){
+            logger.error("set policy to redis task hash error! msg=" + policyJson, e);
+            exceptionCollector.addEvent(e);
+            return false;
+        }
+    }    
+    
+    
+    /**
+     * 写redis channel下发策略
+     * @param message
+     * @return
+     */
+    protected boolean publishRedisChannel(StrategySendChannel message) {
+                
+        rediscluster.sendMessage(REDIS_POLICY_CHANNEL, message.objectToJson());
+
+        return true;
+    }
+
+    /**
+     * 写redis channel下发策略
+     * @param policy
+     * @return
+     */
+    public boolean publishRedisChannel(BaseVo policy) {       
+        try{
+            if ( policy instanceof DpiV1CfgDpiinfo ) {
+                DpiV1CfgDpiinfo dpiV1CfgDpiinfo = (DpiV1CfgDpiinfo)policy;
+
+                //创建policy ack
+                List<String> euips = new ArrayList<String>();
+                euips.add(dpiV1CfgDpiinfo.getIp());
+                setPolicyToRedisAck(policy, euips);
+
+                StrategySendChannel channel = new StrategySendChannel();
+                //发布消息
+                int tmpOperType = policy.getOperationType(); 
+                if (dpiV1CfgDpiinfo.getPort()!=null&&dpiV1CfgDpiinfo.getPort()!=0) {
+                    dpiV1CfgDpiinfo.setSerialPort(dpiV1CfgDpiinfo.getPort());
+                    dpiV1CfgDpiinfo.setProbeType(DevFlag.DPI.getValue());
+                    channel.setMessageContent(policy.objectToJson());
+
+                    channel.setProbeType(DevFlag.DPI.getValue());
+                    channel.setMessageType(policy.getMessageType());
+
+                    rediscluster.sendMessage(REDIS_POLICY_CHANNEL,channel.objectToJson());
+                }else if(dpiV1CfgDpiinfo.getOperationType() == 2){ // 
+                	  dpiV1CfgDpiinfo.setSerialPort(50000L);
+                      dpiV1CfgDpiinfo.setProbeType(DevFlag.DPI.getValue());
+                      dpiV1CfgDpiinfo.setOperationType(3);
+                      channel.setMessageContent(policy.objectToJson());
+
+                      channel.setProbeType(DevFlag.DPI.getValue());
+                      channel.setMessageType(policy.getMessageType());
+                    rediscluster.sendMessage(REDIS_POLICY_CHANNEL,channel.objectToJson());
+               }
+
+                dpiV1CfgDpiinfo.setSerialPort(dpiV1CfgDpiinfo.getIdcPort());
+                dpiV1CfgDpiinfo.setProbeType(DevFlag.IDC.getValue());
+                dpiV1CfgDpiinfo.setOperationType(tmpOperType);
+                channel.setMessageContent(policy.objectToJson());
+
+                channel.setProbeType(DevFlag.IDC.getValue());
+                channel.setMessageType(policy.getMessageType());
+
+                rediscluster.sendMessage(REDIS_POLICY_CHANNEL,channel.objectToJson());
+            } else if (policy instanceof BatchISPMessagePolicy) {
+				// 发布消息
+				StrategySendChannel channel = new StrategySendChannel();
+				channel.setProbeType(policy.getProbeType());
+				channel.setMessageType(policy.getMessageType());
+				channel.setMessageContent(policy.objectToJson());
+				rediscluster.sendMessage(REDIS_POLICY_CHANNEL, channel.objectToJson());
+            } else {
+                //创建policy ack
+                List<String> euips = getEuIpByPolicy(policy);
+                setPolicyToRedisAck(policy, euips);
+
+                //发布消息
+                StrategySendChannel channel = new StrategySendChannel();
+                channel.setProbeType(policy.getProbeType());
+                channel.setMessageType(policy.getMessageType());
+                channel.setMessageContent(policy.objectToJson());
+                rediscluster.sendMessage(REDIS_POLICY_CHANNEL,channel.objectToJson());
+
+            }
+        }catch(Exception e){
+            logger.error("set policy to redis channel error! msg=" + JSON.toJSONString(policy), e);
+            exceptionCollector.addEvent(e);
+            return false;
+        }
+
+
+        return true;
+    }
+    
+    /**
+     * 策略添加到redis ack中
+     * @param policy
+     * @return
+     */
+    protected boolean setPolicyToRedisAck(BaseVo policy, List<String> eu_ip){
+        
+        PolicyAckUtil.getInstance().setPolicyAck(policy.getProbeType(), policy.getMessageType(), policy.getMessageNo(), eu_ip, 0);
+                
+        return true;
+    }
+    
+    /**
+     * 根据策略获得需要发送的EU IP
+     * @param policy
+     * @return
+     */
+    protected List<String> getEuIpByPolicy(BaseVo policy){
+        List<String> ipList = new ArrayList<String>();
+
+        try{
+            String key = String.format(REDIS_POLICY_HASH_KEY, ProbeType.EU.getValue(),
+                    MessageTypeConstants.MESSAGE_TYPE_DPI_INFO);
+
+            Map<String, String> euList = rediscluster.getHashs(key);
+
+            boolean isAll = true;
+            String houseId = "";
+            //机房绑定策略，只发给指定的机房
+            if(policy.getClass().equals(HousePolicyBind.class)){
+                HousePolicyBind bindPolicy = (HousePolicyBind)policy;
+                if(bindPolicy.getHouseType() == HouseType.HOUSE_TYPE_SPECIFIC.getValue()){
+                    isAll = false;
+                    houseId = bindPolicy.getHouseId();
+                }
+            }
+
+            //添加需要下发的EU服务器
+            for(Entry<String, String> entry : euList.entrySet()){
+                DpiV1CfgDpiinfo euInfo = DpiV1CfgDpiinfo.parseFrom(entry.getValue(), DpiV1CfgDpiinfo.class);
+                //删除状态不需要
+                if(euInfo.getOperationType() == OperationConstants.OPERATION_DELETE) {
+                    continue;
+                }
+
+                if(!isAll){
+                    //判断IP属于哪个机房
+                    if(!euInfo.getIdcHouseIds().contains(houseId)) {
+                        continue;
+                    }
+                }
+
+                if (euInfo.getIp()==null){
+                    continue;
+                }
+                //是否已经存在
+                if(ipList.contains(euInfo.getIp())) {
+                    continue;
+                }
+
+                ipList.add(euInfo.getIp());
+            }
+        } catch(Exception e){
+            exceptionCollector.addEvent(e);
+        }
+
+        return ipList;
+    }
+
+    /**
+     * 手动重发策略
+     * @param probeType
+     * @param messageType
+     * @param messageNo
+     * @param eu_ip
+     * @return
+     */
+    public boolean ManualRetransPolicy(int probeType, int messageType, long messageNo, List<String> eu_ip){
+        return ManualRetransPolicy(0L, probeType, messageType, messageNo, eu_ip);
+    }
+    
+    /**
+     * 手动重发策略
+     * @param probeType
+     * @param messageType
+     * @param messageNo
+     * @param eu_ip
+     * @return
+     */
+    public boolean ManualRetransPolicy(long topTaskId, int probeType, int messageType, long messageNo, List<String> eu_ip){      
+        try{
+            boolean result = false;
+            
+            //获得策略信息
+            String key = String.format(REDIS_POLICY_HASH_KEY, probeType, messageType);            
+            String policyContent = rediscluster.getHash(key, String.valueOf(messageNo));
+                        
+            return ManualRetransPolicy(topTaskId, probeType, messageType, policyContent, eu_ip);
+        }catch(Exception e){
+            logger.error("manual retrans policy error! probeType=" + probeType + ", messageType="+messageType + ", messageNo=" + messageNo, e);
+            exceptionCollector.addEvent(e);
+            return false;
+        }
+    }
+    
+    /**
+     * 手动重发策略
+     * @param probeType
+     * @param messageType
+     * @param messageNo
+     * @param eu_ip
+     * @return
+     */
+    public boolean ManualRetransPolicy(long topTaskId, int probeType, int messageType, String policyContent, List<String> eu_ip){
+        try{
+            boolean result = false;
+            
+            //添加到redis task hash中
+            result = setPolicyToRedisTask(topTaskId, policyContent);
+            if(!result){
+                logger.error("policy add redis task hash error! probeType=" + probeType + ", messageType="+messageType + ", policyContent=" + policyContent);
+                return false;
+            }
+
+            Map<String,Object> maps =  JSON.parseObject(policyContent,new TypeReference<Map<String, Object>>(){});
+            int operationType = (Integer) maps.get("operationType");
+            long messageNo = (Integer) maps.get("messageNo");
+            // 绑定机房策略会有此字段，值：GD_ATKJ_IDC
+            String houseIdStr = null;
+            if(messageType == 133){
+            	houseIdStr = maps.get("houseId") == null ? null : (String)maps.get("houseId");
+            }
+            if (OperationConstants.OPERATION_UPDATE == operationType){
+                maps.put("operationType",1);
+            }
+
+            // 手动重发前先初始化ack
+            List<String> euips = trim(eu_ip);
+            if(euips == null || euips.isEmpty()){
+            	//创建policy ack
+                euips = getEuIpsByHouseId(messageType,houseIdStr);
+            }
+            PolicyAckUtil.getInstance().setPolicyAck(probeType, messageType, messageNo, euips, 0);
+            
+            //写redis channel
+            StrategySendChannel channel = new StrategySendChannel();
+            channel.setIp(eu_ip);
+            channel.setProbeType(probeType);
+            channel.setMessageType(messageType);
+            channel.setMessageContent(JSON.toJSONString(maps));
+            result = publishRedisChannel(channel);
+            if(!result){
+                logger.error("publish policy to redis channel error! probeType=" + probeType + ", messageType="+messageType + ", policyContent=" + policyContent);
+                return false;
+            }
+            
+            return true;
+        }catch(Exception e){
+            logger.error("manual retrans policy error! probeType=" + probeType + ", messageType="+messageType + ", policyContent=" + policyContent, e);
+            exceptionCollector.addEvent(e);
+            return false;
+        }
+    }
+    
+    private List<String> trim(List<String> eu_ip) {
+    	if(eu_ip == null){
+    		return null;
+    	}
+		List<String> rs = new ArrayList<String>();
+		for(String ip : eu_ip){
+			if(!StringUtils.isBlank(ip)){
+				rs.add(ip);
+			}
+		}
+		return rs;
+	}
+
+	private List<String> getEuIpsByHouseId(int messageType, String houseIdStr) {
+    	List<String> ipList = new ArrayList<String>();
+
+        try{
+            String key = String.format(REDIS_POLICY_HASH_KEY, ProbeType.EU.getValue(),
+                    MessageTypeConstants.MESSAGE_TYPE_DPI_INFO);
+
+            Map<String, String> euList = rediscluster.getHashs(key);
+
+            boolean isAll = true;
+            String houseId = "";
+            //机房绑定策略，只发给指定的机房
+            if(messageType == 133){
+                if(!StringUtils.isBlank(houseIdStr)){
+                    isAll = false;
+                    houseId = houseIdStr;
+                }
+            }
+
+            //添加需要下发的EU服务器
+            for(Entry<String, String> entry : euList.entrySet()){
+                DpiV1CfgDpiinfo euInfo = DpiV1CfgDpiinfo.parseFrom(entry.getValue(), DpiV1CfgDpiinfo.class);
+                //删除状态不需要
+                if(euInfo.getOperationType() == OperationConstants.OPERATION_DELETE) {
+                    continue;
+                }
+
+                if(!isAll){
+                    //判断IP属于哪个机房
+                    if(!euInfo.getIdcHouseIds().contains(houseId)) {
+                        continue;
+                    }
+                }
+
+                if (euInfo.getIp()==null){
+                    continue;
+                }
+                //是否已经存在
+                if(ipList.contains(euInfo.getIp())) {
+                    continue;
+                }
+
+                ipList.add(euInfo.getIp());
+            }
+        } catch(Exception e){
+            exceptionCollector.addEvent(e);
+        }
+		return ipList;
+	}
+
+	/**
+     * 修改多个策略
+     * @param policyList
+     * @return
+     */
+    public boolean modifyPolicy(List<? extends BaseVo> policyList){
+        
+        boolean result = true;
+        for(BaseVo policy : policyList){
+            
+            result = modifyPolicy(policy);
+            
+            if(!result){
+                break;
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 修改策略
+     * @param policy
+     * @return
+     */
+    public boolean modifyPolicy(BaseVo policy){
+        
+        try{
+            setPropertiesBeforeSaveOrUpdate(policy);
+            // 更新之前设置一些已知值
+            beforeUpdatePolicy(policy);
+
+            boolean result = false;
+            
+            //策略写入数据库
+            result = modifyDb(policy);
+            if(!result){
+                logger.error("policy modify database error! msg=" + policy.objectToJson());
+                return false;
+            }                       
+            
+            //策略存入redis中
+            result = setRedisPolicyHash(policy);
+            if(!result){
+                logger.error("policy modify redis hash error! msg=" + policy.objectToJson());
+                return false;
+            }
+            
+            //自定义策略逻辑
+            result = modifyCustomLogic(policy);
+            if(!result){
+                logger.error("policy modify custom logic error! msg=" + policy.objectToJson());
+                return false;
+            }
+            
+            return true;
+            
+        }catch(Exception e){
+            logger.error("modify policy error! msg=" + policy.objectToJson(), e);
+            exceptionCollector.addEvent(e);
+            return false;
+        }        
+    }
+    
+    /**
+     * 修改数据库
+     * @param policy
+     * @return
+     */
+    protected abstract boolean modifyDb(BaseVo policy);
+    
+    /**
+     * 修改自定义逻辑，需要的策略重写该方法
+     * @param policy
+     * @return
+     */
+    protected boolean modifyCustomLogic(BaseVo policy){
+        
+        return false;
+    }
+    
+    /**
+     * 删除多个策略
+     * @param policyList
+     * @return
+     */
+    public boolean deletePolicy(List<? extends BaseVo> policyList){
+        
+        boolean result = true;
+        for(BaseVo policy : policyList){     
+            
+            result = deletePolicy(policy);
+            
+            if(!result){
+                break;
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 删除策略
+     * @param policy
+     * @return
+     */
+    public boolean deletePolicy(BaseVo policy){
+        try{
+            setPropertiesBeforeSaveOrUpdate(policy);
+            // 删除之前执行一些初始化操作
+            beforeDeletePolicy(policy);
+
+            boolean result = false;
+            
+            //策略写入数据库
+            result = deleteDb(policy);
+            if(!result){
+                logger.error("policy delete database error! msg=" + policy.objectToJson());
+                return false;
+            }
+            
+            //策略存入redis中
+            result = setRedisPolicyHash(policy);
+            if(!result){
+                logger.error("policy delete redis hash error! msg=" + policy.objectToJson());
+                return false;
+            }
+            
+            //自定义策略逻辑
+            result = deleteCustomLogic(policy);
+            if(!result){
+                logger.error("policy delete custom logic error! msg=" + policy.objectToJson());
+                return false;
+            }
+            
+            return true;
+        }catch(Exception e){
+            logger.error("delete policy error! msg=" + policy.objectToJson(), e);
+            exceptionCollector.addEvent(e);
+            return false;
+        }
+    }
+    
+    /**
+     * 删除数据库
+     * @param policy
+     * @return
+     */
+    protected abstract boolean deleteDb(BaseVo policy);
+    
+    /**
+     * 删除自定义逻辑，需要的策略重写该方法
+     * @param policy
+     * @return
+     */
+    protected boolean deleteCustomLogic(BaseVo policy){
+        
+        return false;
+    }
+    
+    /**
+     * 获取绑定策略
+     * @param policy
+     * @return
+     */
+    protected List<HousePolicyBind> getBindPolicy(BaseVo policy){
+        return housePolicyBindMapper.getBindPolicy(policy);
+    }
+
+    /**
+     * 内部方法，插入之前对实体相关属性赋值
+     * 插入之前设置一些公共值：messageSequenceNo  operationType  (if(exist) bindAction)
+     * @param policy
+     */
+    private void beforeInsertPolicy(BaseVo policy){
+        //设置状态为新增
+        policy.setOperationType(OperationConstants.OPERATION_SAVE);
+
+        // IdcIsmsCfgAccessLog和EuDeviceStatus IpAddressAllocation messageNo属性在自己Service内设置
+        if(policy instanceof IdcIsmsCfgAccessLog) {
+            policy.setMessageSequenceNo(SequenceNoUtil.getInstance().getSequenceNo(policy.getMessageType()));
+            return;
+        } else if (policy instanceof EuDeviceStatus) {
+            policy.setMessageSequenceNo(SequenceNoUtil.getInstance().getSequenceNo(policy.getMessageType()));
+            return;
+        } else if (policy instanceof IpAddressAllocation){
+            policy.setMessageSequenceNo(SequenceNoUtil.getInstance().getSequenceNo(policy.getMessageType()));
+            return;
+        } else if (policy instanceof HouseIp){
+            policy.setMessageSequenceNo(SequenceNoUtil.getInstance().getSequenceNo(policy.getMessageType()));
+            setBindActionProperty(policy);
+            return;
+        }
+
+        if(policy.getMessageNo() == null || policy.getMessageNo() == 0){
+            policy.setMessageNo(MessageNoUtil.getInstance().getMessageNo(policy.getMessageType()));
+        }
+        policy.setMessageSequenceNo(SequenceNoUtil.getInstance().getSequenceNo(policy.getMessageType()));
+
+        // HouseIp和HousePolicyBind需要为bindAction属性赋值
+        setBindActionProperty(policy);
+
+    }
+
+    /**
+     * 内部方法，更新之前对实体相关属性赋值
+     * 更新之前设置一些公共值：messageSequenceNo  operationType  (if(exist) bindAction)
+     * @param policy
+     */
+    private void beforeUpdatePolicy(BaseVo policy){
+        policy.setMessageSequenceNo(SequenceNoUtil.getInstance().getSequenceNo(policy.getMessageType()));
+        //设置状态为修改
+        policy.setOperationType(OperationConstants.OPERATION_UPDATE);
+
+        // HouseIp和HousePolicyBind需要为bindAction属性赋值
+        setBindActionProperty(policy);
+    }
+
+    /**
+     * 内部方法，更新之前对实体相关属性赋值
+     * 删除之前设置一些公共值：messageSequenceNo  operationType  (if(exist) bindAction)
+     * @param policy
+     */
+    private void beforeDeletePolicy(BaseVo policy){
+        policy.setMessageSequenceNo(SequenceNoUtil.getInstance().getSequenceNo(policy.getMessageType()));
+        //设置状态为修改
+        policy.setOperationType(OperationConstants.OPERATION_DELETE);
+
+        setBindActionProperty(policy);
+    }
+
+    /**
+     * 设置bindAction属性
+     * @param policy
+     */
+    private void setBindActionProperty ( BaseVo policy ){
+        int bindAction = BindAction.BIND.getValue();
+        if ( policy.getOperationType() == OperationConstants.OPERATION_DELETE ){
+            bindAction = BindAction.UNBIND.getValue();
+        }
+
+        // HouseIp和HousePolicyBind需要为bindAction属性赋值
+        if ( policy instanceof HouseIp){
+            ((HouseIp) policy).setBindAction(bindAction);
+        } else if (policy instanceof HousePolicyBind) {
+            ((HousePolicyBind) policy).setBindAction(bindAction);
+        } else if ( policy instanceof UserPolicyBind ) {
+            ((UserPolicyBind) policy).setBindAction(bindAction);
+        }
+    }
+
+    /**
+     * 插入之前根据对各子类特性为已知属性赋值
+     *       messageName  messageType    probeType....
+     * @param policy:BaseVo子类
+     */
+    protected void setPropertiesBeforeSaveOrUpdate(BaseVo policy){
+
+        // 如果messageName为空 则设置一个默认值
+        if (StringUtils.isEmpty(policy.getMessageName())) {
+            policy.setMessageName(System.currentTimeMillis()+"");
+        }
+
+        if (policy instanceof DpiV1CfgDpiinfo) {
+            DpiV1CfgDpiinfo dpiV1CfgDpiinfo = (DpiV1CfgDpiinfo)policy;
+            // BaseVo中的属性
+            dpiV1CfgDpiinfo.setMessageType(MessageTypeConstants.MESSAGE_TYPE_DPI_INFO);
+            dpiV1CfgDpiinfo.setProbeType(ProbeType.EU.getValue());
+
+            if(dpiV1CfgDpiinfo.getDevFlag()==null){
+                dpiV1CfgDpiinfo.setDevFlag(DevFlag.IDC.getValue());
+            }
+            if(dpiV1CfgDpiinfo.getConnectFlag()==null){
+                dpiV1CfgDpiinfo.setConnectFlag(ConnectFlag.SUCCESS.getValue());
+            }
+
+        } else if (policy instanceof HouseIp) {
+            HouseIp houseIp = ( HouseIp ) policy;
+            // BaseVo中的属性
+            houseIp.setMessageType(MessageTypeConstants.MESSAGE_TYPE_HOUSE_IP);
+            houseIp.setProbeType(ProbeType.EU.getValue());
+
+        } else if (policy instanceof HousePolicyBind) {
+            HousePolicyBind housePolicyBind = ( HousePolicyBind ) policy;
+            // BaseVo中的属性
+            housePolicyBind.setMessageType(MessageTypeConstants.MESSAGE_TYPE_HOUSE_POLICY_BIND);
+            housePolicyBind.setProbeType(ProbeType.EU.getValue());
+
+        } else if (policy instanceof IdcIsmsCfgAccessLog) {
+            IdcIsmsCfgAccessLog idcIsmsCfgAccessLog = ( IdcIsmsCfgAccessLog ) policy;
+            // BaseVo中的属性
+            idcIsmsCfgAccessLog.setMessageType(MessageTypeConstants.MESSAGE_TYPE_ACCESS_LOG);
+            idcIsmsCfgAccessLog.setProbeType(ProbeType.EU.getValue());
+
+        } else if (policy instanceof IdcIsmsCfgFlowupload) {
+            IdcIsmsCfgFlowupload idcIsmsCfgFlowupload = ( IdcIsmsCfgFlowupload ) policy;
+            // BaseVo中的属性
+            idcIsmsCfgFlowupload.setMessageType(MessageTypeConstants.MESSAGE_TYPE_FLOW_UPLOAD);
+            idcIsmsCfgFlowupload.setProbeType(ProbeType.EU.getValue());
+
+        } else if (policy instanceof ISPMessagePolicy) {
+            ISPMessagePolicy ispMessagePolicy = ( ISPMessagePolicy ) policy;
+            // BaseVo中的属性
+            ispMessagePolicy.setMessageType(MessageTypeConstants.MESSAGE_TYPE_ISP_MESSAGE_POLICY);
+            ispMessagePolicy.setProbeType(ProbeType.EU.getValue());
+
+        } else if (policy instanceof EuDeviceStatus) {
+            EuDeviceStatus euDeviceStatus = (EuDeviceStatus)policy;
+            euDeviceStatus.setMessageType(MessageTypeConstants.MESSAGE_TYPE_EU_STATUS);
+            euDeviceStatus.setProbeType(ProbeType.EU.getValue());
+
+        } else if (policy instanceof DPIFlowUpload) {
+            DPIFlowUpload dpiFlowUpload = (DPIFlowUpload)policy;
+            dpiFlowUpload.setMessageType(MessageTypeConstants.MESSAGE_TYPE_FLOW_UPLOAD_ANALYSIS);
+            dpiFlowUpload.setProbeType(ProbeType.DPI.getValue());
+
+        } else if (policy instanceof UserPolicyBind) {
+            UserPolicyBind userPolicyBind = (UserPolicyBind)policy;
+            userPolicyBind.setMessageType(MessageTypeConstants.MESSAGE_TYPE_USER_BIND_POLICY);
+            userPolicyBind.setProbeType(ProbeType.DPI.getValue());
+
+        } else if (policy instanceof AreaGroupDTO){
+            AreaGroupDTO areaGroupDTO = (AreaGroupDTO)policy;
+            areaGroupDTO.setMessageType(MessageTypeConstants.MESSAGE_TYPE_APPLICATION_FLOW_UPLOAD);
+            areaGroupDTO.setProbeType(ProbeType.DPI.getValue());
+
+        } else if (policy instanceof IpAddressAllocation) {
+            IpAddressAllocation ipAddressAllocation = (IpAddressAllocation)policy;
+            ipAddressAllocation.setMessageType(MessageTypeConstants.MESSAGE_TYPE_IP_ADDRESS_ALLOCATION);
+            ipAddressAllocation.setProbeType(ProbeType.DPI.getValue());
+
+        }
+    }
+
+    /**
+     *
+     * @param policy
+     * @return
+     */
+    public boolean strategySortAndChannelToRedis(BaseVo policy) {
+        try{
+            // 是否成功标志
+            boolean success = setPolicyOperateSequenceToRedis(policy);
+            if (!success) {
+                logger.error("setPolicyOperateSequenceToRedis failed..."+policy.objectToJson());
+                return false;
+            }
+
+            success = publishRedisChannel(policy);
+            if (!success) {
+                logger.error("publishRedisChannel failed..."+policy.objectToJson());
+                return false;
+            }
+        }catch(Exception e){
+            logger.error("strategySortAndChannelToRedis error! msg=" + policy.objectToJson(), e);
+            exceptionCollector.addEvent(e);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     *
+     * @param policy
+     * @return
+     */
+    public boolean addTaskAndChannelToRedis(BaseVo policy){
+        try{
+            // 是否成功标志
+            boolean success = setPolicyToRedisTask(policy);
+            if(!success) {
+                logger.error("setPolicyToRedisTask failed..."+policy.objectToJson());
+                return false;
+            }
+            success = publishRedisChannel(policy);
+            if (!success) {
+                logger.error("publishRedisChannel failed..."+policy.objectToJson());
+                return false;
+            }
+        } catch (Exception e){
+            logger.error("addTaskAndChannelToRedis error! msg=" + policy.objectToJson(), e);
+            exceptionCollector.addEvent(e);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 更新redis相关信息(StrategySorted  jobstatus )并发送通道信息(StrategySendChannel)
+     * @param policy
+     * @return
+     */
+    public boolean sendRedisMessage(BaseVo policy){
+        try{
+            boolean result = false;
+            result = setPolicyOperateSequenceToRedis(policy);
+            if ( !result ) {
+                logger.error("setPolicyOperateSequenceToRedis failed..."+policy.objectToJson());
+                return false;
+            }
+            result = addTaskAndChannelToRedis(policy);
+            if ( !result ) {
+                logger.error("addTaskAndChannelToRedis failed..."+policy.objectToJson());
+                return false;
+            }
+        } catch (Exception e){
+            logger.error("sendRedisMessage error! msg=" + policy.objectToJson(), e);
+            exceptionCollector.addEvent(e);
+            return false;
+        }
+
+        return true;
+    }
+
+    public static void main(){
+        String s = "}\"";
+        String s1 = s.replaceFirst("}\"","}");
+        System.out.println(s1);
+        int a = 3;
+        changeInt(a);
+        System.out.println(a);
+//        String str = channel.objectToJson();
+//        String str2 =  str.replaceFirst(":\"",":").replaceFirst("}\"","}");
+//        String str3 = str2.replaceAll("\\\\\"","\"");
+
+    }
+
+    public static void changeInt(int a){
+        a = 4;
+    }
+}

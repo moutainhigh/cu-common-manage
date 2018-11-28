@@ -1,0 +1,46 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+
+import com.aotain.cu.annotation.ExpSheet;
+import com.aotain.cu.annotation.Export;
+import com.aotain.cu.serviceapi.model.HouseIPSegmentInformation;
+
+@ExpSheet(name="机房IP地址段信息")
+public class HouseIPSegmentInforDTO extends HouseIPSegmentInformation implements Serializable {
+
+	private static final long serialVersionUID = 8989523692335871139L;
+	
+	@Export(title="机房名称", id=1)
+	private String houseName; //机房名称
+	
+	@Export(title="IP地址使用方式", id=4)
+	private String ipTypeStr; //IP地址使用方式（0-静态、1-动态，2-保留）
+
+	private String preEndIP;//变更前结束IP地址
+
+	public String getPreEndIP() {
+		return preEndIP;
+	}
+
+	public void setPreEndIP(String preEndIP) {
+		this.preEndIP = preEndIP;
+	}
+
+	public String getHouseName() {
+		return houseName;
+	}
+
+	public String getIpTypeStr() {
+		return ipTypeStr;
+	}
+
+	public void setHouseName(String houseName) {
+		this.houseName = houseName;
+	}
+
+	public void setIpTypeStr(String ipTypeStr) {
+		this.ipTypeStr = ipTypeStr;
+	}
+
+}

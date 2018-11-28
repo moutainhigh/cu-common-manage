@@ -1,0 +1,58 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+import java.util.Set;
+
+public class ServiceHHFrameDto extends BaseDTO implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -408750091772874869L;
+	private Long hhId;
+	private Long houseId;
+	private Long frameId;
+	private String unitName;
+	private String frameNo;
+	private Set<HouseFrameInformationDTO> houseFrame;
+	public Long getHhId() {
+		return hhId;
+	}
+	public void setHhId(Long hhId) {
+		this.hhId = hhId;
+	}
+	public Long getHouseId() {
+		return houseId;
+	}
+	public void setHouseId(Long houseId) {
+		this.houseId = houseId;
+	}
+	
+	
+	
+	public Set<HouseFrameInformationDTO> getHouseFrame() {
+		return houseFrame;
+	}
+	public void setHouseFrame(Set<HouseFrameInformationDTO> houseFrame) {
+		this.houseFrame = houseFrame;
+	}
+	public Long getFrameId() {
+		return frameId;
+	}
+	public void setFrameId(Long frameId) {
+		this.frameId = frameId;
+	}
+	public String getUnitName() {
+		return unitName;
+	}
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
+	public String getFrameNo() {
+		return frameNo;
+	}
+	public void setFrameNo(String frameNo) {
+		this.frameNo = frameNo;
+	}
+	
+	
+}

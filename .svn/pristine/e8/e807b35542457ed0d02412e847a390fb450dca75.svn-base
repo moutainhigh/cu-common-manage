@@ -1,0 +1,137 @@
+package com.aotain.cu.serviceapi.model;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
+
+import com.aotain.cu.annotation.Export;
+
+public class UserServiceInformation extends BaseModel implements Serializable {
+
+	private static final long serialVersionUID = -1213732561502010653L;
+
+	@Export(title="服务ID", id=1)
+	private Long serviceId;
+
+
+
+    private Long userId;
+
+    @Export(title="服务内容", id=3)
+    private String serviceContent; // 预登记的服务内容（可多选）
+
+    @Export(title="备案号或许可证号", id=7)
+    private String registerId; // 网站备案号或许可证号
+
+    @Export(title="接入方式", id=5)
+    private Integer setmode; // 接入方式
+
+    @Export(title="业务类型", id=6)
+    private Integer business; // 业务类型（1-IDC业务、2-ISP业务）
+
+    @Export(title="应用服务类型", id=4)
+    private Integer serviceType; // 应用服务类型（0-内部应用、1-电信业务/对外应用服务）
+
+    private Integer regType;// 网站备案类型
+
+	private String serviceIdStr;
+
+    private List<ServiceDomainInformation> domainList;
+
+	public Long getServiceId() {
+		return serviceId;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public String getServiceContent() {
+		return serviceContent;
+	}
+
+	public String getRegisterId() {
+		return registerId;
+	}
+
+	public Integer getSetmode() {
+		return setmode;
+	}
+
+	public Integer getBusiness() {
+		return business;
+	}
+
+	public Integer getServiceType() {
+		return serviceType;
+	}
+
+	public Integer getRegType() {
+		return regType;
+	}
+
+	public List<ServiceDomainInformation> getDomainList() {
+		return domainList;
+	}
+
+	public void setServiceId(Long serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public void setServiceContent(String serviceContent) {
+		this.serviceContent = serviceContent;
+	}
+
+	public void setRegisterId(String registerId) {
+		this.registerId = registerId;
+	}
+
+	public void setSetmode(Integer setmode) {
+		this.setmode = setmode;
+	}
+
+	public void setBusiness(Integer business) {
+		this.business = business;
+	}
+
+	public void setServiceType(Integer serviceType) {
+		this.serviceType = serviceType;
+	}
+
+	public void setRegType(Integer regType) {
+		this.regType = regType;
+	}
+
+	public void setDomainList(List<ServiceDomainInformation> domainList) {
+		this.domainList = domainList;
+	}
+
+	public String getServiceIdStr() {
+		return serviceIdStr;
+	}
+
+	public void setServiceIdStr( String serviceIdStr ) {
+		this.serviceIdStr = serviceIdStr;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		UserServiceInformation that = (UserServiceInformation) o;
+		return Objects.equals(serviceId, that.serviceId) &&
+				Objects.equals(userId, that.userId);
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hash(serviceId, userId);
+	}
+
+
+}

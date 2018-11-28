@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aotain.common.policyapi.mapper.AreaGroupAsMapper">
+
+    <resultMap id="BaseResultMap" type="com.aotain.common.policyapi.model.AreaGroupAs" >
+        <id column="AREAGROUP_ID" property="areaGroupId" jdbcType="BIGINT" />
+        <result column="AS_TYPE" property="asType" jdbcType="INTEGER" />
+        <result column="AS_AREA_ID" property="asAreaId" jdbcType="BIGINT" />
+        <result column="AS_AREA_NAME" property="asAreaName" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        AREAGROUP_ID, AS_TYPE, AS_AREA_ID,AS_AREA_NAME
+    </sql>
+
+    <insert id="insertData" parameterType="com.aotain.common.policyapi.model.AreaGroupAs" >
+        insert into DPI_V1_CFG_AREAGROUP_AS(
+        <include refid="Base_Column_List" />
+        ) values(
+        #{areaGroupId,jdbcType=BIGINT},
+        #{asType,jdbcType=INTEGER},
+        #{asAreaId,jdbcType=BIGINT},
+        #{asAreaName,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <delete id="deleteData" parameterType="java.lang.Long" >
+        delete from DPI_V1_CFG_AREAGROUP_AS
+        where AS_AREA_ID = #{asAreaId,jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteDataByAreaGroupId" parameterType="long">
+        delete from DPI_V1_CFG_AREAGROUP_AS
+        where AREAGROUP_ID = #{areaGroupId,jdbcType=BIGINT}
+    </delete>
+
+    <update id="updateData"/>
+
+
+</mapper>

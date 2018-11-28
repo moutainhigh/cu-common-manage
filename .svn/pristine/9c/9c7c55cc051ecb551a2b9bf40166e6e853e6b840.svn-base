@@ -1,0 +1,135 @@
+package com.aotain.cu.serviceapi.model;
+
+import java.io.Serializable;
+import java.util.Objects;
+
+public class UserVirtualInformation extends BaseModel implements Serializable {
+
+	private static final long serialVersionUID = 1491301296171915397L;
+
+	private Long virtualId;
+	
+	private Long hhId;
+
+    private Long userId; // 用户ID
+
+    private Long houseId; // 机房ID
+
+    private String name; // 主机名
+
+    private Integer status; // 状态
+
+    private Integer type; // 类型(1-共享式、2-专用式，3-云虚拟)
+
+    private String networkAddress; // 网络地址
+
+    private String mgnAddress; // 管理地址
+    
+    private String virtualNo; //编号
+    
+    private Integer setmode;//接入方式
+
+	public Long getVirtualId() {
+		return virtualId;
+	}
+
+	public Long getHhId() {
+		return hhId;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public Long getHouseId() {
+		return houseId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public Integer getStatus() {
+		return 1;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public String getNetworkAddress() {
+		return networkAddress;
+	}
+
+	public String getMgnAddress() {
+		return mgnAddress;
+	}
+
+	public String getVirtualNo() {
+		return virtualNo;
+	}
+
+	public void setVirtualId(Long virtualId) {
+		this.virtualId = virtualId;
+	}
+
+	public void setHhId(Long hhId) {
+		this.hhId = hhId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public void setHouseId(Long houseId) {
+		this.houseId = houseId;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public void setNetworkAddress(String networkAddress) {
+		this.networkAddress = networkAddress;
+	}
+
+	public void setMgnAddress(String mgnAddress) {
+		this.mgnAddress = mgnAddress;
+	}
+
+	public void setVirtualNo(String virtualNo) {
+		this.virtualNo = virtualNo;
+	}
+
+	public Integer getSetmode() {
+		return setmode;
+	}
+
+	public void setSetmode(Integer setmode) {
+		this.setmode = setmode;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		UserVirtualInformation that = (UserVirtualInformation) o;
+		return Objects.equals(virtualId, that.virtualId) &&
+				Objects.equals(userId, that.userId) &&
+				Objects.equals(houseId, that.houseId);
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hash(virtualId, userId, houseId);
+	}
+}

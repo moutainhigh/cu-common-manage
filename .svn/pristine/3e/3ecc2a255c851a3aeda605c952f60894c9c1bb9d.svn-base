@@ -1,0 +1,198 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import com.aotain.cu.annotation.Export;
+
+public class ServiceHHIPTransInformationDTO extends BaseDTO implements Serializable {
+
+	private static final long serialVersionUID = 3922856329625226983L;
+	
+	@Export(title="IP地址转换ID", id=1)
+	private Long ipTransforId;
+	
+	@Export(title="服务下占用机房ID", id=2)
+	private Long hhId;
+	
+	private Long serviceId;
+	
+	private Long userId;
+	
+	@Export(title="互联网起始IP地址", id=3)
+	private String internetStartIP;
+	
+	@Export(title="互联网终止IP地址", id=4)
+	private String internetEndIP;
+	
+	@Export(title="私网起始IP地址", id=5)
+	private String netStartIP;
+	
+	@Export(title="私网终止IP地址", id=6)
+	private String netEndIP;
+	
+	private Date creationDate;
+	
+	private Date updateDate;
+	
+	private Long createUserId;
+	
+	private String decimalInternetStartIP; //互联网起始IP地址对应的十进制
+	
+	private String decimalInternetEndIP; //互联网终止IP地址对应的十进制
+	
+	private String decimalNetStartIP; //私网起始IP地址对应的十进制
+	
+	private String decimalNetEndIP; //私网终止IP地址对应的十进制
+	
+	private Integer operationType; //操作类型（0-完成记录、1-新增、2-修改(变更)，3-删除）
+	
+	private Integer dealFlag; //处理状态（0-未上报、1-提交上报、2-接口文件已经生成、3-文件生成失败，4-上报成功） 
+	
+	private Long selIpTrans;//选择机房下的ip地址段
+
+	public Long getIpTransforId() {
+		return ipTransforId;
+	}
+
+	public Long getHhId() {
+		return hhId;
+	}
+
+	public Long getServiceId() {
+		return serviceId;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public String getInternetStartIP() {
+		return internetStartIP;
+	}
+
+	public String getInternetEndIP() {
+		return internetEndIP;
+	}
+
+	public String getNetStartIP() {
+		return netStartIP;
+	}
+
+	public String getNetEndIP() {
+		return netEndIP;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public Long getCreateUserId() {
+		return createUserId;
+	}
+
+	public String getDecimalInternetStartIP() {
+		return decimalInternetStartIP;
+	}
+
+	public String getDecimalInternetEndIP() {
+		return decimalInternetEndIP;
+	}
+
+	public String getDecimalNetStartIP() {
+		return decimalNetStartIP;
+	}
+
+	public String getDecimalNetEndIP() {
+		return decimalNetEndIP;
+	}
+
+	public Integer getOperationType() {
+		return operationType;
+	}
+
+	public Integer getDealFlag() {
+		return dealFlag;
+	}
+
+	public void setIpTransforId(Long ipTransforId) {
+		this.ipTransforId = ipTransforId;
+	}
+
+	public void setHhId(Long hhId) {
+		this.hhId = hhId;
+	}
+
+	public void setServiceId(Long serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public void setInternetStartIP(String internetStartIP) {
+		this.internetStartIP = internetStartIP;
+	}
+
+	public void setInternetEndIP(String internetEndIP) {
+		this.internetEndIP = internetEndIP;
+	}
+
+	public void setNetStartIP(String netStartIP) {
+		this.netStartIP = netStartIP;
+	}
+
+	public void setNetEndIP(String netEndIP) {
+		this.netEndIP = netEndIP;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public void setCreateUserId(Long createUserId) {
+		this.createUserId = createUserId;
+	}
+
+	public void setDecimalInternetStartIP(String decimalInternetStartIP) {
+		this.decimalInternetStartIP = decimalInternetStartIP;
+	}
+
+	public void setDecimalInternetEndIP(String decimalInternetEndIP) {
+		this.decimalInternetEndIP = decimalInternetEndIP;
+	}
+
+	public void setDecimalNetStartIP(String decimalNetStartIP) {
+		this.decimalNetStartIP = decimalNetStartIP;
+	}
+
+	public void setDecimalNetEndIP(String decimalNetEndIP) {
+		this.decimalNetEndIP = decimalNetEndIP;
+	}
+
+	public void setOperationType(Integer operationType) {
+		this.operationType = operationType;
+	}
+
+	public void setDealFlag(Integer dealFlag) {
+		this.dealFlag = dealFlag;
+	}
+
+	public Long getSelIpTrans() {
+		return selIpTrans;
+	}
+
+	public void setSelIpTrans(Long selIpTrans) {
+		this.selIpTrans = selIpTrans;
+	}
+
+}

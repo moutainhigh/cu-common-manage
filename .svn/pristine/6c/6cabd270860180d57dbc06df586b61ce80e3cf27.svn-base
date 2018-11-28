@@ -1,0 +1,198 @@
+package com.aotain.cu.serviceapi.model;
+
+import java.util.Date;
+
+public class ServiceHouseOccupancyVirtualHost extends BaseModel {
+	
+	private Long virtualId;
+	
+	private Long hhId; //占用机房ID
+	
+	private Long serviceId; //服务信息ID
+	
+	private Long userId; //用户ID
+	
+	private String unitName; //单位名称
+	
+	private String virtualNo; //编号 
+	
+	private String name; //主机名
+	
+	private String networkAddress; //网络地址
+	
+	private Integer status; //状态
+	
+	private Integer type; //类型(1-共享式、2-专用式，3-云虚拟)
+	
+	private String mgnAddress; //管理地址
+	
+	private Date createDate; //创建日期
+	
+	private Date updateDate; //更新日期
+	
+	private Integer operationType; //操作类型（0-完成记录、1-新增、2-修改(变更)，3-删除）
+	
+	private Integer dealFlag; //处理状态（0-未上报、1-提交上报、2-接口文件已经生成、3-文件生成失败，4-上报成功） 
+
+	private String regId;
+	
+	private String houseName; 
+	
+	private String areaCode; // 地市码
+
+	private Long houseId;//机房Id
+	
+	
+	public Long getHouseId() {
+		return houseId;
+	}
+
+	public void setHouseId(Long houseId) {
+		this.houseId = houseId;
+	}
+
+	public Long getVirtualId() {
+		return virtualId;
+	}
+
+	public void setVirtualId(Long virtualId) {
+		this.virtualId = virtualId;
+	}
+
+	public Long getHhId() {
+		return hhId;
+	}
+
+	public void setHhId(Long hhId) {
+		this.hhId = hhId;
+	}
+
+	public Long getServiceId() {
+		return serviceId;
+	}
+
+	public void setServiceId(Long serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public String getUnitName() {
+		return unitName;
+	}
+
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
+
+	public String getVirtualNo() {
+		return virtualNo;
+	}
+
+	public void setVirtualNo(String virtualNo) {
+		this.virtualNo = virtualNo;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getNetworkAddress() {
+		return networkAddress;
+	}
+
+	public void setNetworkAddress(String networkAddress) {
+		this.networkAddress = networkAddress;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public String getMgnAddress() {
+		return mgnAddress;
+	}
+
+	public void setMgnAddress(String mgnAddress) {
+		this.mgnAddress = mgnAddress;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public Integer getOperationType() {
+		return operationType;
+	}
+
+	public void setOperationType(Integer operationType) {
+		this.operationType = operationType;
+	}
+
+	public Integer getDealFlag() {
+		return dealFlag;
+	}
+
+	public void setDealFlag(Integer dealFlag) {
+		this.dealFlag = dealFlag;
+	}
+
+	public String getRegId() {
+		return regId;
+	}
+
+	public void setRegId(String regId) {
+		this.regId = regId;
+	}
+
+	public String getHouseName() {
+		return houseName;
+	}
+
+	public void setHouseName(String houseName) {
+		this.houseName = houseName;
+	}
+
+	public String getAreaCode() {
+		return areaCode;
+	}
+
+	public void setAreaCode(String areaCode) {
+		this.areaCode = areaCode;
+	}
+	
+}

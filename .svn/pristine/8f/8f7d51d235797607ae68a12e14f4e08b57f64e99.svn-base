@@ -1,0 +1,228 @@
+package com.aotain.cu.serviceapi.dto;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import com.aotain.cu.annotation.Export;
+
+public class ServiceHHInformationDTO extends BaseDTO implements Serializable {
+
+	private static final long serialVersionUID = 9173221252670246537L;
+	
+	@Export(title="占用机房ID", id=1)
+	private Long hhId;
+	
+	private Long houseId;
+	
+	@Export(title="服务ID", id=2)
+	private Long serviceId;
+	
+	private Long userId;
+	
+	@Export(title="机房名称", id=3)
+	private String houseName; //机房名称
+	
+	private String frameIds; //占用机架ID(多个机架用英文逗号隔开）
+	
+	@Export(title="机架/机位名称", id=4)
+	private String frameNames; //机架名称
+	
+	private String frameNos; //占用机架编码
+	
+	private String houseNo; //机房编号
+	
+	@Export(title="资源分配日期", id=5)
+	private String distributeTime;
+	
+	@Export(title="网络带宽(Mbps)", id=6)
+	private String bandWidth;
+	
+	private Integer operationType;
+	
+	private Integer dealFlag;
+	
+	private Date creationDate;
+	
+	private Date updateDate;
+	
+	private Long createUserId; //创建人ID
+	
+	private String infoComplete; //信息是否完整
+	
+	private String beginDistributeTime; //起始资源分配日期
+	
+	private String endDistributeTime; //终止资源分配日期
+	
+	private Integer business; //业务节点类型（辅助字段）
+	
+	private HouseInformationDTO houseInfo;
+
+	public Long getHhId() {
+		return hhId;
+	}
+
+	public Long getHouseId() {
+		return houseId;
+	}
+
+	public Long getServiceId() {
+		return serviceId;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public String getHouseName() {
+		return houseName;
+	}
+
+	public String getFrameIds() {
+		return frameIds;
+	}
+
+	public String getFrameNames() {
+		return frameNames;
+	}
+
+	public String getFrameNos() {
+		return frameNos;
+	}
+
+	public String getHouseNo() {
+		return houseNo;
+	}
+
+	public String getDistributeTime() {
+		return distributeTime;
+	}
+
+	public String getBandWidth() {
+		return bandWidth;
+	}
+
+	public Integer getOperationType() {
+		return operationType;
+	}
+
+	public Integer getDealFlag() {
+		return dealFlag;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public Long getCreateUserId() {
+		return createUserId;
+	}
+
+	public String getInfoComplete() {
+		return infoComplete;
+	}
+
+	public String getBeginDistributeTime() {
+		return beginDistributeTime;
+	}
+
+	public String getEndDistributeTime() {
+		return endDistributeTime;
+	}
+
+	public Integer getBusiness() {
+		return business;
+	}
+
+	public void setHhId(Long hhId) {
+		this.hhId = hhId;
+	}
+
+	public void setHouseId(Long houseId) {
+		this.houseId = houseId;
+	}
+
+	public void setServiceId(Long serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public void setHouseName(String houseName) {
+		this.houseName = houseName;
+	}
+
+	public void setFrameIds(String frameIds) {
+		this.frameIds = frameIds;
+	}
+
+	public void setFrameNames(String frameNames) {
+		this.frameNames = frameNames;
+	}
+
+	public void setFrameNos(String frameNos) {
+		this.frameNos = frameNos;
+	}
+
+	public void setHouseNo(String houseNo) {
+		this.houseNo = houseNo;
+	}
+
+	public void setDistributeTime(String distributeTime) {
+		this.distributeTime = distributeTime;
+	}
+
+	public void setBandWidth(String bandWidth) {
+		this.bandWidth = bandWidth;
+	}
+
+	public void setOperationType(Integer operationType) {
+		this.operationType = operationType;
+	}
+
+	public void setDealFlag(Integer dealFlag) {
+		this.dealFlag = dealFlag;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public void setCreateUserId(Long createUserId) {
+		this.createUserId = createUserId;
+	}
+
+	public void setInfoComplete(String infoComplete) {
+		this.infoComplete = infoComplete;
+	}
+
+	public void setBeginDistributeTime(String beginDistributeTime) {
+		this.beginDistributeTime = beginDistributeTime;
+	}
+
+	public void setEndDistributeTime(String endDistributeTime) {
+		this.endDistributeTime = endDistributeTime;
+	}
+
+	public void setBusiness(Integer business) {
+		this.business = business;
+	}
+
+	public HouseInformationDTO getHouseInfo() {
+		return houseInfo;
+	}
+
+	public void setHouseInfo(HouseInformationDTO houseInfo) {
+		this.houseInfo = houseInfo;
+	}
+
+}
